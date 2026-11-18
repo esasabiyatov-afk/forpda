@@ -656,7 +656,11 @@ extension APIClient: DependencyKey {
                     remote: {
                         let response = try await api.send(ForumCommand.attachmentDownloadUrl(id: id))
                         let urlString = String(response.dropFirst(10).dropLast(2))
-                        return URL(string: urlString)!
+                        guard let url = URL(string: urlString)
+                                ?? urlString.addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed).flatMap(URL.init(string:)) else {
+                            throw URLError(.badURL)
+                        }
+                        return url
                     },
                     policy: .cacheOrLoad
                 )

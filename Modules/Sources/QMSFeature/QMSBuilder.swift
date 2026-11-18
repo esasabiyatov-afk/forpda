@@ -40,8 +40,9 @@ public struct QMSBuilder {
 
             let linkText = NSMutableAttributedString(string: fileName)
             let downloadLink = "https://4pda.to/forum/dl/post/\(attachmentID)/\(fileName)"
-            let downloadUrl = URL(string: downloadLink.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)!
-            linkText.addAttribute(.link, value: downloadUrl, range: NSRange(location: 0, length: fileName.count))
+            guard let encodedLink = downloadLink.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+                  let downloadUrl = URL(string: encodedLink) else { continue }
+            linkText.addAttribute(.link, value: downloadUrl, range: NSRange(location: 0, length: linkText.length))
 
             result.replaceCharacters(in: match.range, with: linkText)
         }

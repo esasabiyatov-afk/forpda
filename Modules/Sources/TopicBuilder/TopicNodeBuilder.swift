@@ -70,7 +70,11 @@ public struct TopicNodeBuilder {
                 elements.append(.hide(subElements, Int(attribute?.string ?? "") ?? nil))
                 
             case .img(let url):
-                elements.append(.image(URL(string: url.string)!))
+                // Skip malformed image URLs instead of crashing
+                if let imageUrl = URL(string: url.string.trimmingCharacters(in: .whitespacesAndNewlines))
+                    ?? url.string.addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed).flatMap(URL.init(string:)) {
+                    elements.append(.image(imageUrl))
+                }
                 
             case .cur(let array):
                 let subElements = convert(array)
@@ -84,19 +88,23 @@ public struct TopicNodeBuilder {
                 let subElements = convert(array)
                 elements.append(.notice(subElements, .admin))
                 
-            case .snapback:
-                fatalError("ПРОПУЩЕННЫЙ SNAPBACK")
-                
-            case .mergetime:
-                fatalError("ПРОПУЩЕННЫЙ MERGETIME")
+            case .snapback, .mergetime:
+                // Should be handled by BBBuilder; ignore leftovers instead of crashing
+                continue
                 
             case .attachment(let id):
-                let id = Int(id.string.prefix(upTo: id.string.firstIndex(of: ":")!).dropFirst())!
-                let attachment = attachments.first(where: { $0.id == id })!
-                elements.append(.attachment(attachment))
+                // Format: "1:dummy" or "=\"1:dummy\""; skip if attachment is missing
+                let raw = id.string
+                let idPart = raw.firstIndex(of: ":").map { raw[..<$0] } ?? raw[...]
+                let digits = idPart.filter(\.isNumber)
+                if let attachmentId = Int(digits),
+                   let attachment = attachments.first(where: { $0.id == attachmentId }) {
+                    elements.append(.attachment(attachment))
+                }
                 
             case .smile:
-                fatalError("ПРОПУЩЕННЫЙ SMILE")
+                // Should be handled by BBBuilder; ignore leftovers instead of crashing
+                continue
             }
         }
         return elements

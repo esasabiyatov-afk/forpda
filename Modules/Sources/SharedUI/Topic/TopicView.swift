@@ -555,8 +555,6 @@ struct CodeView: View {
                         onQuote: onQuote
                     )
                     .padding(12)
-                } else {
-                    fatalError("Non text type in CodeView")
                 }
             }
         }

@@ -140,7 +140,7 @@ public struct ForumStatFeature: Reducer, Sendable {
                 }
                 
             case .view(.shareLinkButtonTapped):
-                let url = URL(string: state.shareLink)!
+                guard let url = URL(string: state.shareLink) else { return .none }
                 state.destination = .share(IdentifiedURL(url))
                 return .none
                 
