@@ -150,15 +150,23 @@ extension AnalyticsClient {
             case POSTHOG_TOKEN
         }
         
-        static func get(_ key: Key) -> String {
-            guard let value = Bundle.main.object(forInfoDictionaryKey: key.rawValue) as? String
-            else { fatalError("Couldn't find \(key.rawValue) key") }
+        /// Returns nil when the key is missing or empty (e.g. sideload builds without secrets).
+        static func get(_ key: Key) -> String? {
+            guard let value = Bundle.main.object(forInfoDictionaryKey: key.rawValue) as? String,
+                  !value.trimmingCharacters(in: .whitespaces).isEmpty,
+                  !value.hasPrefix("$(")
+            else { return nil }
             return value
         }
     }
     
     private static func configureAnalytics(id: String, isEnabled: Bool, isDebugEnabled: Bool) {
-        let config = PostHogConfig(projectToken: Secrets.get(.POSTHOG_TOKEN), host: "https://eu.i.posthog.com")
+        guard let token = Secrets.get(.POSTHOG_TOKEN) else {
+            @Dependency(\.logger[.analytics]) var logger
+            logger.info("POSTHOG_TOKEN is not set, analytics disabled")
+            return
+        }
+        let config = PostHogConfig(projectToken: token, host: "https://eu.i.posthog.com")
         config.debug = isDebugEnabled
         config.getAnonymousId = { _ in UUID(uuidString: id) ?? UUID.v7() }
         config.optOut = !isEnabled
@@ -196,8 +204,13 @@ extension AnalyticsClient {
     }
     
     private static func configureCrashlytics(id: String, isEnabled: Bool, isDebugEnabled: Bool) {
+        guard let dsn = Secrets.get(.SENTRY_DSN) else {
+            @Dependency(\.logger[.analytics]) var logger
+            logger.info("SENTRY_DSN is not set, crashlytics disabled")
+            return
+        }
         SentrySDK.start { options in
-            options.dsn = Secrets.get(.SENTRY_DSN)
+            options.dsn = dsn
             options.debug = isDebugEnabled
             options.enabled = isEnabled
             options.configureProfiling = {
