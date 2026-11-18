@@ -120,7 +120,7 @@ public enum BBContainerNode: Equatable {
         case .left:    self = .left(children)
         case .right:   self = .right(children)
         case .justify: self = .justify(children)
-        case .list:    self = .list(ListType(rawValue: attribute?.string ?? "")!, children)
+        case .list:    self = .list(ListType(rawValue: attribute?.string ?? "") ?? .bullet, children)
         case .spoiler: self = .spoiler(attribute, children)
         case .quote:   self = .quote(attribute, children)
         case .code:    self = .code(attribute, children)
@@ -146,19 +146,21 @@ public enum BBContainerNode: Equatable {
             if case let .text(text) = children.first {
                 self = .img(text)
             } else {
-                fatalError("BBContainerNode НЕ ПОЛУЧИЛОСЬ СОЗДАТЬ IMG")
+                // Empty/broken tag: render nothing instead of crashing
+                self = .text(NSAttributedString(string: ""))
             }
         case .attachment:
             if case let .text(text) = children.first {
                 self = .attachment(text)
             } else {
-                fatalError("BBContainerNode НЕ ПОЛУЧИЛОСЬ СОЗДАТЬ IMG")
+                // Empty/broken tag: render nothing instead of crashing
+                self = .text(NSAttributedString(string: ""))
             }
         case .smile:
             if case let .text(text) = children.first {
                 self = .smile(text)
             } else {
-                fatalError("BBContainerNode НЕ ПОЛУЧИЛОСЬ СОЗДАТЬ SMILE")
+                self = .text(NSAttributedString(string: ""))
             }
         default:
             return nil

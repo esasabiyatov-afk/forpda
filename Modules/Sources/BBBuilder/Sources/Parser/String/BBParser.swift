@@ -33,7 +33,7 @@ public struct BBParser {
             case let .closingTag(tag) where openingTags.contains(where: { $0.tag == tag }):
                 let attribute = openingTags.last(where: { $0.tag == tag })?.attribute
                 guard let containerNode = close(tag, attribute: attribute, elements: elements) else {
-                    fatalError("Не найдена открывающая пара")
+                    return elements
                 }
                 return [containerNode]
                 

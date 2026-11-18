@@ -182,7 +182,7 @@ public struct BBBuilder {
             case let .attachment(attribute):
                 logger.info("Attachment case")
                 
-                let attachmentId = Int(attribute.string.prefix(upTo: attribute.string.firstIndex(of: ":")!).dropFirst())!
+                let attachmentId = attribute.string.bbAttachmentId ?? -1
                 guard let attachmentIndex = attachments.firstIndex(where: { $0.id == attachmentId }) else {
                     logger.error("Didn't find attachment with id \(attachmentId), fallback to text")
                     let text = NSAttributedString(string: "[attachment=\(attribute.string)]", attributes: BBRenderer.defaultAttributes)

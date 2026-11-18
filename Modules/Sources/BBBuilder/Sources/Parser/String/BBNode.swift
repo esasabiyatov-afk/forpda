@@ -94,7 +94,7 @@ public extension BBNode {
         case .left:    self = .left(children)
         case .right:   self = .right(children)
         case .justify: self = .justify(children)
-        case .list:    self = .list(BBContainerNode.ListType(rawValue: attribute ?? "")!, children)
+        case .list:    self = .list(BBContainerNode.ListType(rawValue: attribute ?? "") ?? .bullet, children)
         case .spoiler: self = .spoiler(attribute, children)
         case .quote:   self = .quote(attribute, children)
         case .code:    self = .code(attribute, children)
@@ -103,34 +103,34 @@ public extension BBNode {
         case .mod:     self = .mod(children)
         case .ex:      self = .ex(children)
         case .snapback:
-            if case let .snapback(postId) = children.first! {
+            if let first = children.first, case let .snapback(postId) = first {
                 self = .snapback(postId)
             } else {
-                fatalError("BBNode НЕ ПОЛУЧИЛОСЬ СОЗДАТЬ SNAPBACK")
+                self = .text("")
             }
         case .mergetime:
-            if case let .mergetime(time) = children.first! {
+            if let first = children.first, case let .mergetime(time) = first {
                 self = .mergetime(time)
             } else {
-                fatalError("BBNode НЕ ПОЛУЧИЛОСЬ СОЗДАТЬ MERGETIME")
+                self = .text("")
             }
         case .img:
-            if case let .img(time) = children.first! {
+            if let first = children.first, case let .img(time) = first {
                 self = .img(time)
             } else {
-                fatalError("BBNode НЕ ПОЛУЧИЛОСЬ СОЗДАТЬ IMG")
+                self = .text("")
             }
         case .attachment:
-            if case let .attachment(time) = children.first! {
+            if let first = children.first, case let .attachment(time) = first {
                 self = .attachment(time)
             } else {
-                fatalError("BBNode НЕ ПОЛУЧИЛОСЬ СОЗДАТЬ ATTACHMENT")
+                self = .text("")
             }
         case .smile:
-            if case let .smile(time) = children.first! {
+            if let first = children.first, case let .smile(time) = first {
                 self = .smile(time)
             } else {
-                fatalError("BBNode НЕ ПОЛУЧИЛОСЬ СОЗДАТЬ SMILE")
+                self = .text("")
             }
         }
     }

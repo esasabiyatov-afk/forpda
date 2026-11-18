@@ -38,15 +38,16 @@ public struct BBAttributedParser {
             case let .openingTag(tag, attribute):
                 if tag == .attachment {
                     // Атачмент не имеет закрывающего тега, так что сразу добавляем напрямую
-                    let attribute = attribute!
+                    guard let attribute else { continue }
                     elements.append(.attachment(attribute))
-                    let id = Int(attribute.string.prefix(upTo: attribute.string.firstIndex(of: ":")!).dropFirst())!
-                    attachments.removeAll(where: { $0.id == id })
+                    if let id = attribute.string.bbAttachmentId {
+                        attachments.removeAll(where: { $0.id == id })
+                    }
                     continue
                 }
                 if tag == .smile {
                     // Смайл не имеет закрывающего тега, так что сразу добавляем напрямую
-                    elements.append(.smile(attribute!))
+                    if let attribute { elements.append(.smile(attribute)) }
                     continue
                 }
                 openingTags.append((tag, attribute))
@@ -55,7 +56,8 @@ public struct BBAttributedParser {
             case let .closingTag(tag) where openingTags.contains(where: { $0.tag == tag }):
                 let attribute = openingTags.last(where: { $0.tag == tag })?.attribute
                 guard let containerNode = close(tag, attribute: attribute, elements: elements) else {
-                    fatalError("Не найдена открывающая пара")
+                    // Unknown container: keep content as is instead of crashing
+                    return elements
                 }
                 return [containerNode]
                 
@@ -109,7 +111,7 @@ public struct BBAttributedParser {
         
         while openingTags.count > 0 {
             // TODO: Апдейтнуть до BBParser варианта?
-            let openingTag = openingTags.popLast()!
+            guard let openingTag = openingTags.popLast() else { break }
             if openingTag.tag == tag {
                 break
             } else {
