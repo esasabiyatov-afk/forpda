@@ -26,7 +26,7 @@ struct AttachmentParser {
                   let url = fields[safe: 1] as? String,
                   let width = fields[safe: 2] as? Int,
                   let height = fields[safe: 3] as? Int,
-                  let description = fields[4] as? String else {
+                  let description = fields[safe: 4] as? String else {
                 throw ParsingError.failedToCastFields
             }
             
@@ -40,7 +40,7 @@ struct AttachmentParser {
                 metadata: .init(
                     width: width,
                     height: height,
-                    url: URL(string: url)!,
+                    url: URL.parsed(url),
                     fullUrl: URL(string: fullUrl ?? ""),
                     description: description
                 ),

@@ -61,7 +61,7 @@ public struct ArticlesListParser {
             authorId: authorId,
             authorName: authorName,
             commentsAmount: commentsAmount,
-            imageUrl: URL(string: imageUrl)!,
+            imageUrl: URL.parsed(imageUrl),
             title: try title.convertHtmlCodes().convertLinks(),
             description: try description.convertHtmlCodes().convertLinks(),
             tags: try extractTags(from: rawTags)

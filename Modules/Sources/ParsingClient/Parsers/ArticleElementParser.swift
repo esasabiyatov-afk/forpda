@@ -137,10 +137,10 @@ public struct ArticleElementParser {
             throw ParsingError.failedToExtractImage
         }
         
-        let attachment = attachments[id - 1]
-        var url = attachment.metadata!.url
-        if let fullUrl = attachment.metadata!.fullUrl { url = fullUrl }
-        return ImageElement(url: url, width: attachment.metadata!.width, height: attachment.metadata!.height)
+        guard let attachment = attachments[safe: id - 1], let metadata = attachment.metadata else {
+            throw ParsingError.failedToExtractImage
+        }
+        return ImageElement(url: metadata.fullUrl ?? metadata.url, width: metadata.width, height: metadata.height)
     }
     
     // MARK: - Images
@@ -152,10 +152,10 @@ public struct ArticleElementParser {
         var imageElements: [ImageElement] = []
         
         for match in text.matches(of: pattern) {
-            let attachment = attachments[Int(match.output.1)! - 1]
-            var url = attachment.metadata!.url
-            if let fullUrl = attachment.metadata!.fullUrl { url = fullUrl }
-            let element = ImageElement(url: url, width: attachment.metadata!.width, height: attachment.metadata!.height)
+            guard let number = Int(match.output.1),
+                  let attachment = attachments[safe: number - 1],
+                  let metadata = attachment.metadata else { continue }
+            let element = ImageElement(url: metadata.fullUrl ?? metadata.url, width: metadata.width, height: metadata.height)
             imageElements.append(element)
         }
         

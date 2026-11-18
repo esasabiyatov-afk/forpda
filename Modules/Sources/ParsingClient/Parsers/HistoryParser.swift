@@ -15,8 +15,8 @@ public struct HistoryParser {
                 guard let array = try JSONSerialization.jsonObject(with: data, options: []) as? [Any] else { throw ParsingError.failedToCastDataToAny }
 
                 return History(
-                    histories: parseHistories(array[3] as! [[Any]]),
-                    historiesCount: array[2] as! Int
+                    histories: parseHistories(array.cast(3, [[Any]].self)),
+                    historiesCount: array.cast(2, Int.self)
                 )
             } catch {
                 throw ParsingError.failedToSerializeData(error)
@@ -29,7 +29,7 @@ public struct HistoryParser {
     private static func parseHistories(_ array: [[Any]]) -> [HistoryInfo] {
         return array.map { history in
             return HistoryInfo(
-                seenDate: Date(timeIntervalSince1970: history[8] as! TimeInterval),
+                seenDate: Date(timeIntervalSince1970: history.cast(8, Double.self)),
                 topic: ForumParser.parseTopic(history)
             )
         }

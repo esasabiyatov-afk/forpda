@@ -37,21 +37,21 @@ public struct ArticleParser {
                     throw ParsingError.failedToCastDataToAny
                 }
                 
-                let pollFields = fields.count > 16 ? fields[16] as! [[Any]] : []
+                let pollFields = fields.count > 16 ? fields.cast(16, [[Any]].self) : []
                 
                 return Article(
-                    id: fields[2] as! Int,
-                    date: Date(timeIntervalSince1970: fields[3] as! TimeInterval),
-                    flag: fields[6] as! Int,
-                    authorId: fields[7] as! Int,
-                    authorName: try (fields[8] as! String).convertHtmlCodes(),
-                    commentsAmount: fields[9] as! Int,
-                    imageUrl: URL(string: (fields[10] as! String))!,
-                    title: try (fields[11] as! String).convertHtmlCodes(),
-                    description: try (fields[12] as! String).convertHtmlCodes(),
-                    attachments: try AttachmentParser.parseArticleAttachment(from: fields[13] as! [[Any]]),
-                    tags: extractTags(from: fields[14] as! [[Any]]),
-                    comments: try extractComments(from: fields[15] as! [[Any]]),
+                    id: fields.cast(2, Int.self),
+                    date: Date(timeIntervalSince1970: fields.cast(3, Double.self)),
+                    flag: fields.cast(6, Int.self),
+                    authorId: fields.cast(7, Int.self),
+                    authorName: try (fields.cast(8, String.self)).convertHtmlCodes(),
+                    commentsAmount: fields.cast(9, Int.self),
+                    imageUrl: URL.parsed(fields.cast(10, String.self)),
+                    title: try (fields.cast(11, String.self)).convertHtmlCodes(),
+                    description: try (fields.cast(12, String.self)).convertHtmlCodes(),
+                    attachments: try AttachmentParser.parseArticleAttachment(from: fields.cast(13, [[Any]].self)),
+                    tags: extractTags(from: fields.cast(14, [[Any]].self)),
+                    comments: try extractComments(from: fields.cast(15, [[Any]].self)),
                     poll: extractPoll(from: pollFields)
                 )
             } catch {
@@ -71,8 +71,8 @@ public struct ArticleParser {
     private static func extractTags(from array: [[Any]]) -> [Tag] {
         return array.map { fields in
             return Tag(
-                id: fields[0] as! Int,
-                name: fields[1] as! String
+                id: fields.cast(0, Int.self),
+                name: fields.cast(1, String.self)
             )
         }
     }
@@ -97,16 +97,16 @@ public struct ArticleParser {
                 return nil
             }
             return Comment(
-                id: fields[0] as! Int,
-                date: Date(timeIntervalSince1970: fields[1] as! TimeInterval),
-                flag: fields[2] as! Int,
-                authorId: fields[3] as! Int,
-                authorName: try (fields[4] as! String).convertHtmlCodes(),
-                parentId: fields[5] as! Int,
+                id: fields.cast(0, Int.self),
+                date: Date(timeIntervalSince1970: fields.cast(1, Double.self)),
+                flag: fields.cast(2, Int.self),
+                authorId: fields.cast(3, Int.self),
+                authorName: try (fields.cast(4, String.self)).convertHtmlCodes(),
+                parentId: fields.cast(5, Int.self),
                 childIds: [],
-                text: try (fields[6] as! String).convertHtmlCodes(),
-                likesAmount: fields[7] as! Int,
-                avatarUrl: URL(string: fields[8] as! String)
+                text: try (fields.cast(6, String.self)).convertHtmlCodes(),
+                likesAmount: fields.cast(7, Int.self),
+                avatarUrl: URL(string: fields.cast(8, String.self))
             )
         }
         
@@ -132,15 +132,15 @@ public struct ArticleParser {
     private static func extractPoll(from array: [[Any]]) -> ArticlePoll? {
         guard !array.isEmpty else { return nil }
         return ArticlePoll(
-            id: array[0][0] as! Int,
-            title: array[0][1] as! String,
-            flag: array[0][2] as! Int,
-            totalVotes: array[0][3] as! Int,
-            options: (array[0][4] as! [[Any]]).map {
+            id: array.row(0).cast(0, Int.self),
+            title: array.row(0).cast(1, String.self),
+            flag: array.row(0).cast(2, Int.self),
+            totalVotes: array.row(0).cast(3, Int.self),
+            options: (array.row(0).cast(4, [[Any]].self)).map {
                 ArticlePoll.Option(
-                    id: $0[0] as! Int,
-                    text: $0[1] as! String,
-                    votes: $0[2] as! Int
+                    id: $0.cast(0, Int.self),
+                    text: $0.cast(1, String.self),
+                    votes: $0.cast(2, Int.self)
                 )
             }
         )
@@ -186,7 +186,7 @@ public struct ArticleParser {
         for comment in comments {
             if comment.parentId == 0 {
                 // This is a root comment, so we build its children recursively
-                var rootComment = commentMap[comment.id]!
+                guard var rootComment = commentMap[comment.id] else { continue }
                 buildChildren(for: &rootComment)
                 result.append(rootComment) // Append the fully built root comment
             }

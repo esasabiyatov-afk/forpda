@@ -21,8 +21,8 @@ public struct AuthParser {
         if let data = string.data(using: .utf8) {
             do {
                 guard let array = try JSONSerialization.jsonObject(with: data, options: []) as? [Any] else { throw ParsingError.failedToCastDataToAny }
-                let urlString = array[2] as! String
-                return URL(string: urlString)!
+                let urlString = array.cast(2, String.self)
+                return URL.parsed(urlString)
             } catch {
                 throw ParsingError.failedToSerializeData(error)
             }
@@ -39,17 +39,17 @@ public struct AuthParser {
         if let data = string.data(using: .utf8) {
             do {
                 guard let array = try JSONSerialization.jsonObject(with: data, options: []) as? [Any] else { throw ParsingError.failedToCastDataToAny }
-                let responseTypeId = array[1] as! Int
+                let responseTypeId = array.cast(1, Int.self)
                 switch responseTypeId {
                 case 0:
-                    let userId = array[2] as! Int
-                    let token = array[3] as! String
+                    let userId = array.cast(2, Int.self)
+                    let token = array.cast(3, String.self)
                     return .success(userId: userId, token: token)
                 case 3:
                     return .wrongPassword
                 case 4:
-                    let urlString = array[2] as! String
-                    let url = URL(string: urlString)!
+                    let urlString = array.cast(2, String.self)
+                    let url = URL.parsed(urlString)
                     return .wrongCaptcha(url: url)
                 default:
                     return .unknown(responseTypeId)

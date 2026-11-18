@@ -70,7 +70,7 @@ public struct FormParser {
                     throw .unknownStatus(error.rawValue)
                 }
             } else {
-                return .success(.topic(id: array[safe: 2] as! Int))
+                return .success(.topic(id: array.cast(2, Int.self)))
             }
             
         case 5:
@@ -121,13 +121,13 @@ public struct FormParser {
                 )
                 
             case "dropdown", "checkbox_list":
-                guard let options = field[6] as? [String] else {
+                guard let options = field[safe: 6] as? [String] else {
                     throw ParsingError.failedToCastFields
                 }
                 formFields.append(type == "dropdown" ? .dropdown(content, options) : .checkboxList(content, options))
                 
             case "upload_box":
-                guard let extensions = field[7] as? [String] else {
+                guard let extensions = field[safe: 7] as? [String] else {
                     throw ParsingError.failedToCastFields
                 }
                 formFields.append(.uploadbox(content, extensions))

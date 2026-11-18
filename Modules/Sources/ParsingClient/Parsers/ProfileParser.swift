@@ -62,38 +62,38 @@ public struct ProfileParser {
                 }
                 
                 return User(
-                    id: array[2] as! Int,
-                    nickname: try (array[3] as! String).convertHtmlCodes(),
-                    imageUrl: URL(string: array[4] as! String),
-                    group: User.Group(rawValue: array[5] as! Int)!,
-                    status: (array[6] as? String).flatMap { $0.isEmpty ? nil : $0 }?.convertCodes(),
-                    signature: (array[7] as? String).flatMap { $0.isEmpty ? nil : $0 },
-                    aboutMe: (array[8] as? String).flatMap { $0.isEmpty ? nil : $0 }?.convertCodes(),
-                    registrationDate: Date(timeIntervalSince1970: array[9] as! TimeInterval),
-                    lastSeenDate: Date(timeIntervalSince1970: array[10] as! TimeInterval),
-                    birthdate: (array[11] as? String).flatMap { $0.isEmpty ? nil : $0 },
-                    gender: User.Gender(rawValue: array[12] as! Int),
-                    userTime: (array[13] as! Int),
-                    city: (array[14] as? String).flatMap { ($0.isEmpty || $0 == "Нет") ? nil : $0.convertCodes() },
-                    devDBdevices: parseUserDevDBDevices(array[15] as! [[Any]]),
-                    karma: ((array[16] as! Double) / 100).round(to: 2),
-                    posts: array[17] as! Int,
-                    comments: array[18] as! Int,
-                    reputation: array[19] as! Int,
-                    topics: array[20] as! Int,
-                    replies: array[21] as! Int,
-                    qmsMessages: (array[22] as! Int),
-                    curatedTopics: parseCuratedTopics(array[23] as! [[Any]]),
-                    warningLogs: parseWarningLogs(array[24] as! [[Any]]),
-                    email: (array[25] as? String).flatMap { $0.isEmpty ? nil : $0 },
-                    registrationIP: array[26] as! String,
-                    sessionIP: array[27] as! String,
-                    warningLevel: array[28] as! Int,
+                    id: array.cast(2, Int.self),
+                    nickname: try (array.cast(3, String.self)).convertHtmlCodes(),
+                    imageUrl: URL(string: array.cast(4, String.self)),
+                    group: (User.Group(rawValue: array.cast(5, Int.self)) ?? .beginning),
+                    status: (array[safe: 6] as? String).flatMap { $0.isEmpty ? nil : $0 }?.convertCodes(),
+                    signature: (array[safe: 7] as? String).flatMap { $0.isEmpty ? nil : $0 },
+                    aboutMe: (array[safe: 8] as? String).flatMap { $0.isEmpty ? nil : $0 }?.convertCodes(),
+                    registrationDate: Date(timeIntervalSince1970: array.cast(9, Double.self)),
+                    lastSeenDate: Date(timeIntervalSince1970: array.cast(10, Double.self)),
+                    birthdate: (array[safe: 11] as? String).flatMap { $0.isEmpty ? nil : $0 },
+                    gender: User.Gender(rawValue: array.cast(12, Int.self)),
+                    userTime: (array.cast(13, Int.self)),
+                    city: (array[safe: 14] as? String).flatMap { ($0.isEmpty || $0 == "Нет") ? nil : $0.convertCodes() },
+                    devDBdevices: parseUserDevDBDevices(array.cast(15, [[Any]].self)),
+                    karma: ((array.cast(16, Double.self)) / 100).round(to: 2),
+                    posts: array.cast(17, Int.self),
+                    comments: array.cast(18, Int.self),
+                    reputation: array.cast(19, Int.self),
+                    topics: array.cast(20, Int.self),
+                    replies: array.cast(21, Int.self),
+                    qmsMessages: (array.cast(22, Int.self)),
+                    curatedTopics: parseCuratedTopics(array.cast(23, [[Any]].self)),
+                    warningLogs: parseWarningLogs(array.cast(24, [[Any]].self)),
+                    email: (array[safe: 25] as? String).flatMap { $0.isEmpty ? nil : $0 },
+                    registrationIP: array.cast(26, String.self),
+                    sessionIP: array.cast(27, String.self),
+                    warningLevel: array.cast(28, Int.self),
                     premoderation: premoderation,
                     readOnlyUntil: readOnlyDate,
-                    banReason: User.BanReason(rawValue: array[31] as! Int),
-                    achievements: parseUserAchievements(array[32] as! [[Any]]),
-                    previousNicknames: array[33] as! String
+                    banReason: User.BanReason(rawValue: array.cast(31, Int.self)),
+                    achievements: parseUserAchievements(array.cast(32, [[Any]].self)),
+                    previousNicknames: array.cast(33, String.self)
                 )
             } catch {
                 throw ParsingError.failedToSerializeData(error)
@@ -107,10 +107,10 @@ public struct ProfileParser {
         if let data = string.data(using: .utf8) {
             do {
                 guard let array = try JSONSerialization.jsonObject(with: data, options: []) as? [Any] else { throw ParsingError.failedToCastDataToAny }
-                let status = array[1] as! Int
+                let status = array.cast(1, Int.self)
                 
                 if status == 0 {
-                    let stringUrl = if array.count > 2 { array[2] as! String } else { "" }
+                    let stringUrl = if array.count > 2 { array.cast(2, String.self) } else { "" }
                     return .success(URL(string: stringUrl))
                 } else {
                     return .error
@@ -126,9 +126,9 @@ public struct ProfileParser {
     private static func parseUserDevDBDevices(_ array: [[Any]]) -> [User.Device] {
         return array.map { device in
             return User.Device(
-                id: device[0] as! String,
-                name: device[1] as! String,
-                main: (device[2] as! Int == 1) ? true : false
+                id: device.cast(0, String.self),
+                name: device.cast(1, String.self),
+                main: (device.cast(2, Int.self) == 1) ? true : false
             )
         }
     }
@@ -136,13 +136,13 @@ public struct ProfileParser {
     private static func parseUserAchievements(_ array: [[Any]]) -> [User.Achievement] {
         return array.map { achievement in
             return User.Achievement(
-                name: achievement[1] as! String,
-                description: achievement[2] as! String,
-                count: achievement[3] as! Int,
-                imageUrl: URL(string: (achievement[0] as! String))!,
-                forumUrl: URL(string: (achievement[5] as! String))!,
+                name: achievement.cast(1, String.self),
+                description: achievement.cast(2, String.self),
+                count: achievement.cast(3, Int.self),
+                imageUrl: URL.parsed(achievement.cast(0, String.self)),
+                forumUrl: URL.parsed(achievement.cast(5, String.self)),
                 presentationDate: Date(
-                    timeIntervalSince1970: achievement[4] as! TimeInterval
+                    timeIntervalSince1970: achievement.cast(4, Double.self)
                 )
             )
         }
@@ -150,20 +150,20 @@ public struct ProfileParser {
     
     private static func parseCuratedTopics(_ array: [[Any]]) -> [User.CuratedTopic] {
         return array.map { topic in
-            return User.CuratedTopic(id: topic[0] as! Int, name: topic[1] as! String)
+            return User.CuratedTopic(id: topic.cast(0, Int.self), name: topic.cast(1, String.self))
         }
     }
     
     private static func parseWarningLogs(_ array: [[Any]]) -> [User.WarningLog] {
         return array.map { warning in
             return User.WarningLog(
-                timestamp: warning[0] as! Int,
-                level: .init(rawValue: warning[1] as! Int) ?? .unknown,
-                authorId: warning[2] as! Int,
-                authorName: warning[3] as! String,
-                reason: warning[4] as! String,
-                postId: warning[5] as! Int,
-                canBeCanceled: ((warning[6] as! Int) != 0)
+                timestamp: warning.cast(0, Int.self),
+                level: .init(rawValue: warning.cast(1, Int.self)) ?? .unknown,
+                authorId: warning.cast(2, Int.self),
+                authorName: warning.cast(3, String.self),
+                reason: warning.cast(4, String.self),
+                postId: warning.cast(5, Int.self),
+                canBeCanceled: ((warning.cast(6, Int.self)) != 0)
             )
         }
     }

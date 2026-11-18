@@ -36,7 +36,7 @@ public struct DevDBParser {
         
         return DeviceSpecifications(
             tag: tag,
-            type: DeviceType(rawValue: type)!,
+            type: (DeviceType(rawValue: type) ?? .phone),
             vendorName: vendorName,
             deviceName: deviceName,
             editionName: editionName,
@@ -66,7 +66,7 @@ public struct DevDBParser {
         }
         
         return DeviceVendorsList(
-            type: DeviceType(rawValue: type)!,
+            type: (DeviceType(rawValue: type) ?? .phone),
             typeName: typeName,
             brands: try parseDeviceVendorsList(brandsRaw)
         )
@@ -114,7 +114,7 @@ public struct DevDBParser {
         }
         
         return DeviceVendor(
-            type: DeviceType(rawValue: type)!,
+            type: (DeviceType(rawValue: type) ?? .phone),
             name: name,
             code: code,
             categoryName: categoryName,
@@ -131,14 +131,14 @@ public struct DevDBParser {
                   let name = product[safe: 1] as? String,
                   let url = product[safe: 2] as? String,
                   let isActual = product[safe: 3] as? Int,
-                  let entriesRaw = product[4] as? [[Any]] else {
+                  let entriesRaw = product[safe: 4] as? [[Any]] else {
                 throw ParsingError.failedToCastFields
             }
             
             devices.append(.init(
                 tag: tag,
                 name: name.convertCodes(),
-                imageUrl: URL(string: url)!,
+                imageUrl: URL.parsed(url),
                 entries: try parseVendorDeviceEntry(entriesRaw),
                 isActual: isActual != 0
             ))
@@ -173,8 +173,8 @@ public struct DevDBParser {
             }
             
             images.append(.init(
-                url: URL(string: url)!,
-                fullUrl: URL(string: fullUrl)!,
+                url: URL.parsed(url),
+                fullUrl: URL.parsed(fullUrl),
                 isFront: isDeviceFront == 1
             ))
         }

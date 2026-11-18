@@ -14,15 +14,15 @@ public struct BookmarksParser {
             do {
                 guard let array = try JSONSerialization.jsonObject(with: data, options: []) as? [Any] else { throw ParsingError.failedToCastDataToAny }
 
-                return (array[4] as! [[Any]]).map { bookmark in
+                return (array.cast(4, [[Any]].self)).map { bookmark in
                     return Bookmark(
-                        id: bookmark[0] as! Int,
-                        parentId: bookmark[4] as! Int,
-                        name: bookmark[6] as! String,
-                        number: bookmark[5] as! Int,
+                        id: bookmark.cast(0, Int.self),
+                        parentId: bookmark.cast(4, Int.self),
+                        name: bookmark.cast(6, String.self),
+                        number: bookmark.cast(5, Int.self),
                         format: bookmarkFormat(bookmark),
-                        updatedAt: Date(timeIntervalSince1970: bookmark[1] as! TimeInterval),
-                        deleted: (bookmark[2] as! Int) == 0 ? false : true
+                        updatedAt: Date(timeIntervalSince1970: bookmark.cast(1, Double.self)),
+                        deleted: (bookmark.cast(2, Int.self)) == 0 ? false : true
                     )
                 }
             } catch {
@@ -34,8 +34,8 @@ public struct BookmarksParser {
     }
     
     private static func bookmarkFormat(_ array: [Any]) -> Bookmark.Format {
-        return if (array[3] as! Int) == 1 { .folder } else {
-            .url(url: URL(string: array[7] as! String)!)
+        return if (array.cast(3, Int.self)) == 1 { .folder } else {
+            .url(url: URL.parsed(array.cast(7, String.self)))
         }
     }
 }

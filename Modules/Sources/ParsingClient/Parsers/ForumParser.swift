@@ -14,15 +14,15 @@ public struct ForumParser {
             do {
                 guard let array = try JSONSerialization.jsonObject(with: data, options: []) as? [Any] else { throw ParsingError.failedToCastDataToAny }
                 return Forum(
-                    id: array[3] as! Int,
-                    name: array[4] as! String,
-                    flag: ForumFlag(rawValue: array[5] as! Int),
-                    globalAnnouncement: array[6] as! String,
-                    announcements: parseAnnouncementInfo(array[7] as! [[Any]]),
-                    subforums: parseForumInfo(array[8] as! [[Any]]),
-                    topicsCount: array[9] as! Int,
-                    topics: parseTopic(array[10] as! [[Any]]),
-                    navigation: parseNavigation(array[2] as! [[Any]])
+                    id: array.cast(3, Int.self),
+                    name: array.cast(4, String.self),
+                    flag: ForumFlag(rawValue: array.cast(5, Int.self)),
+                    globalAnnouncement: array.cast(6, String.self),
+                    announcements: parseAnnouncementInfo(array.cast(7, [[Any]].self)),
+                    subforums: parseForumInfo(array.cast(8, [[Any]].self)),
+                    topicsCount: array.cast(9, Int.self),
+                    topics: parseTopic(array.cast(10, [[Any]].self)),
+                    navigation: parseNavigation(array.cast(2, [[Any]].self))
                 )
             } catch {
                 throw ParsingError.failedToSerializeData(error)
@@ -37,7 +37,7 @@ public struct ForumParser {
             do {
                 guard let array = try JSONSerialization.jsonObject(with: data, options: []) as? [Any] else { throw ParsingError.failedToCastDataToAny }
                 
-                return parseForumInfo(array[2] as! [[Any]])
+                return parseForumInfo(array.cast(2, [[Any]].self))
             } catch {
                 throw ParsingError.failedToSerializeData(error)
             }
@@ -56,15 +56,15 @@ public struct ForumParser {
                 }
                 
                 return ForumStat(
-                    id: array[3] as! Int,
-                    name: array[4] as! String,
-                    description: array[5] as! String,
-                    flag: ForumFlag(rawValue: array[6] as! Int),
-                    globalAnnouncement: array[7] as! String,
-                    subforumsCount: array[8] as! Int,
-                    topicsCount: array[9] as! Int,
-                    postsCount: array[10] as! Int,
-                    moderators: parseForumStatModerators(array[11] as! [[Any]])
+                    id: array.cast(3, Int.self),
+                    name: array.cast(4, String.self),
+                    description: array.cast(5, String.self),
+                    flag: ForumFlag(rawValue: array.cast(6, Int.self)),
+                    globalAnnouncement: array.cast(7, String.self),
+                    subforumsCount: array.cast(8, Int.self),
+                    topicsCount: array.cast(9, Int.self),
+                    postsCount: array.cast(10, Int.self),
+                    moderators: parseForumStatModerators(array.cast(11, [[Any]].self))
                 )
             } catch {
                 throw ParsingError.failedToSerializeData(error)
@@ -79,13 +79,13 @@ public struct ForumParser {
             do {
                 guard let array = try JSONSerialization.jsonObject(with: data, options: []) as? [Any] else { throw ParsingError.failedToCastDataToAny }
                 
-                return (array[2] as! [[Any]]).map { event in
+                return (array.cast(2, [[Any]].self)).map { event in
                     return ForumEventLog(
-                        userId: event[1] as! Int,
-                        userName: (event[2] as! String).convertCodes(),
-                        userGroup: User.Group(rawValue: event[3] as! Int)!,
-                        content: event[4] as! String,
-                        createdAt: Date(timeIntervalSince1970: TimeInterval(event[0] as! Int))
+                        userId: event.cast(1, Int.self),
+                        userName: (event.cast(2, String.self)).convertCodes(),
+                        userGroup: (User.Group(rawValue: event.cast(3, Int.self)) ?? .beginning),
+                        content: event.cast(4, String.self),
+                        createdAt: Date(timeIntervalSince1970: TimeInterval(event.cast(0, Int.self)))
                     )
                 }
             } catch {
@@ -99,9 +99,9 @@ public struct ForumParser {
     internal static func parseForumStatModerators(_ array: [[Any]]) -> [ForumStat.ForumModerator] {
         return array.map { moderator in
             return ForumStat.ForumModerator(
-                id: moderator[0] as! Int,
-                name: (moderator[1] as! String).convertCodes(),
-                group: User.Group(rawValue: moderator[2] as! Int)!
+                id: moderator.cast(0, Int.self),
+                name: (moderator.cast(1, String.self)).convertCodes(),
+                group: (User.Group(rawValue: moderator.cast(2, Int.self)) ?? .beginning)
             )
         }
     }
@@ -116,10 +116,10 @@ public struct ForumParser {
                 }
                 
                 return ForumJump(
-                    id: array[2] as! Int,
-                    offset: array[3] as! Int,
-                    postId: array[4] as! Int,
-                    postsFilter: TopicPostsFilter(rawValue: array[5] as! Int)!
+                    id: array.cast(2, Int.self),
+                    offset: array.cast(3, Int.self),
+                    postId: array.cast(4, Int.self),
+                    postsFilter: (TopicPostsFilter(rawValue: array.cast(5, Int.self)) ?? .all)
                 )
             } catch {
                 throw ParsingError.failedToSerializeData(error)
@@ -135,8 +135,8 @@ public struct ForumParser {
                 guard let array = try JSONSerialization.jsonObject(with: data, options: []) as? [Any] else { throw ParsingError.failedToCastDataToAny }
                 
                 return Announcement(
-                    name: (array[2] as! String).convertCodes(),
-                    content: array[3] as! String
+                    name: (array.cast(2, String.self)).convertCodes(),
+                    content: array.cast(3, String.self)
                 )
             } catch {
                 throw ParsingError.failedToSerializeData(error)
@@ -149,9 +149,9 @@ public struct ForumParser {
     internal static func parseNavigation(_ array: [[Any]]) -> [ForumInfo] {
         return array.map { navigation in
             return ForumInfo(
-                id: navigation[1] as! Int,
-                name: navigation[2] as! String,
-                flag: ForumFlag(rawValue: navigation[0] as! Int)
+                id: navigation.cast(1, Int.self),
+                name: navigation.cast(2, String.self),
+                flag: ForumFlag(rawValue: navigation.cast(0, Int.self))
             )
         }
     }
@@ -159,20 +159,20 @@ public struct ForumParser {
     private static func parseAnnouncementInfo(_ array: [[Any]]) -> [AnnouncementInfo] {
         return array.map { announcement in
             return AnnouncementInfo(
-                id: announcement[0] as! Int,
-                name: (announcement[1] as! String).convertCodes()
+                id: announcement.cast(0, Int.self),
+                name: (announcement.cast(1, String.self)).convertCodes()
             )
         }
     }
     
     private static func parseForumInfo(_ array: [[Any]]) -> [ForumInfo] {
         return array.map { forum in
-            let redirectUrl = forum.count > 3 ? URL(string: forum[3] as! String) : nil
+            let redirectUrl = forum.count > 3 ? URL(string: forum.cast(3, String.self)) : nil
             
             return ForumInfo(
-                id: forum[0] as! Int,
-                name: (forum[1] as! String).convertCodes(),
-                flag: ForumFlag(rawValue: forum[2] as! Int),
+                id: forum.cast(0, Int.self),
+                name: (forum.cast(1, String.self)).convertCodes(),
+                flag: ForumFlag(rawValue: forum.cast(2, Int.self)),
                 redirectUrl: redirectUrl
             )
         }
@@ -186,15 +186,15 @@ public struct ForumParser {
         
     internal static func parseTopic(_ topic: [Any]) -> TopicInfo {
         return TopicInfo(
-            id: topic[0] as! Int,
-            name: (topic[1] as! String).convertCodes(),
-            description: (topic[2] as! String).convertCodes(),
-            flag: ForumFlag(rawValue: topic[3] as! Int),
-            postsCount: topic[4] as! Int,
+            id: topic.cast(0, Int.self),
+            name: (topic.cast(1, String.self)).convertCodes(),
+            description: (topic.cast(2, String.self)).convertCodes(),
+            flag: ForumFlag(rawValue: topic.cast(3, Int.self)),
+            postsCount: topic.cast(4, Int.self),
             lastPost: TopicInfo.LastPost(
-                date: Date(timeIntervalSince1970: topic[5] as! TimeInterval),
-                userId: topic[6] as! Int,
-                username: (topic[7] as! String).convertCodes()
+                date: Date(timeIntervalSince1970: topic.cast(5, Double.self)),
+                userId: topic.cast(6, Int.self),
+                username: (topic.cast(7, String.self)).convertCodes()
             )
         )
     }

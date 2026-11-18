@@ -14,20 +14,20 @@ public struct QMSChatParser {
             do {
                 guard let array = try JSONSerialization.jsonObject(with: data, options: []) as? [Any] else { throw ParsingError.failedToCastDataToAny }
                 return QMSChat(
-                    id: array[2] as! Int,
-                    creationDate: Date(timeIntervalSince1970: array[3] as! TimeInterval),
-                    lastMessageDate: Date(timeIntervalSince1970: array[4] as! TimeInterval),
-                    name: array[5] as! String,
-                    partnerId: array[6] as! Int,
-                    partnerName: array[7] as! String,
-                    flag: array[8] as! Int,
-                    avatarUrl: URL(string: array[9] as! String),
-                    unknownId1: array[10] as! Int,
-                    totalCount: array[11] as! Int,
-                    unknownId2: array[12] as! Int,
-                    lastMessageId: array[13] as! Int,
-                    unreadCount: array[14] as! Int,
-                    messages: parseMessages(array[15] as! [[Any]])
+                    id: array.cast(2, Int.self),
+                    creationDate: Date(timeIntervalSince1970: array.cast(3, Double.self)),
+                    lastMessageDate: Date(timeIntervalSince1970: array.cast(4, Double.self)),
+                    name: array.cast(5, String.self),
+                    partnerId: array.cast(6, Int.self),
+                    partnerName: array.cast(7, String.self),
+                    flag: array.cast(8, Int.self),
+                    avatarUrl: URL(string: array.cast(9, String.self)),
+                    unknownId1: array.cast(10, Int.self),
+                    totalCount: array.cast(11, Int.self),
+                    unknownId2: array.cast(12, Int.self),
+                    lastMessageId: array.cast(13, Int.self),
+                    unreadCount: array.cast(14, Int.self),
+                    messages: parseMessages(array.cast(15, [[Any]].self))
                 )
             } catch {
                 throw ParsingError.failedToSerializeData(error)
@@ -40,11 +40,11 @@ public struct QMSChatParser {
     private static func parseMessages(_ array: [[Any]]) -> [QMSMessage] {
         return array.map { message in
             return QMSMessage(
-                id: message[0] as! Int,
-                senderId: message[1] as! Int,
-                date: Date(timeIntervalSince1970: message[2] as! TimeInterval),
-                text: message[3] as! String,
-                attachments: try! AttachmentParser.parseAttachment(message[4] as! [[Any]])
+                id: message.cast(0, Int.self),
+                senderId: message.cast(1, Int.self),
+                date: Date(timeIntervalSince1970: message.cast(2, Double.self)),
+                text: message.cast(3, String.self),
+                attachments: (try? AttachmentParser.parseAttachment(message.cast(4, [[Any]].self))) ?? []
             )
         }
     }

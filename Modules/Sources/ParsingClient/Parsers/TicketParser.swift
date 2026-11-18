@@ -40,7 +40,7 @@ public struct TicketParser {
         return Ticket(
             info: TicketInfo(
                 title: title.convertCodes(),
-                status: TicketStatus(rawValue: statusRaw)!,
+                status: (TicketStatus(rawValue: statusRaw) ?? .notProcessed),
                 subjectId: subjectId,
                 subjectElementId: subjectElementId,
                 subjectRootId: subjectRootId,
@@ -127,7 +127,7 @@ public struct TicketParser {
                 id: id,
                 info: TicketInfo(
                     title: title.convertCodes(),
-                    status: TicketStatus(rawValue: statusRaw)!,
+                    status: (TicketStatus(rawValue: statusRaw) ?? .notProcessed),
                     subjectId: subjectId,
                     subjectElementId: subjectElementId,
                     subjectRootId: subjectRootId,
@@ -190,7 +190,7 @@ public struct TicketParser {
             throw ParsingError.failedToCastFields
         }
         
-        return try! contentRaw.map { statusRaw in
+        return try contentRaw.map { statusRaw in
             guard let status = statusRaw[safe: 0] as? Int,
                   let handlerId = statusRaw[safe: 2] as? Int,
                   let handlerName = statusRaw[safe: 3] as? String,
@@ -199,7 +199,7 @@ public struct TicketParser {
             }
             
             return TicketStatusHistory(
-                status: TicketStatus(rawValue: status)!,
+                status: (TicketStatus(rawValue: status) ?? .notProcessed),
                 handlerId: handlerId,
                 handlerName: handlerName.convertCodes(),
                 changedAt: Date(timeIntervalSince1970: TimeInterval(changedAt))
