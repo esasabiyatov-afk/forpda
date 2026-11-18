@@ -372,9 +372,11 @@ public struct UploadBoxFeature: Reducer, Sendable {
                 guard let index = state.files.firstIndex(where: { $0.id == id }) else { break }
                 switch status {
                 case let .done(response):
-                    guard let fileId = Int(response.replacingOccurrences(of: "[", with: "")
+                    let responseParts = response.replacingOccurrences(of: "[", with: "")
                         .replacingOccurrences(of: "]", with: "")
-                        .components(separatedBy: ",")[2]) else {
+                        .components(separatedBy: ",")
+                    guard responseParts.indices.contains(2),
+                          let fileId = Int(responseParts[2].trimmingCharacters(in: .whitespaces)) else {
                         state.files[index].isUploading = false
                         state.files[index].uploadingError = .other(NSError(domain: response, code: 0))
                         return .send(.internal(.startNextUpload))
@@ -411,6 +413,10 @@ public struct UploadBoxFeature: Reducer, Sendable {
                 }
                 
             case let .internal(.uploadFileFinished(index, responseFileId)):
+                // File list may have changed while the action was in flight
+                guard state.files.indices.contains(index) else {
+                    return .send(.internal(.startNextUpload))
+                }
                 state.files[index].serverId = responseFileId
                 state.files[index].fileSource = nil
                 state.files[index].isUploading = false
