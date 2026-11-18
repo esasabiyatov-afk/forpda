@@ -71,12 +71,13 @@ public struct TopicParser {
             throw ParsingError.failedToCastFields
         }
         
-        return try votesRaw.map { vote in
+        // Skip malformed entries instead of failing the whole list
+        return votesRaw.compactMap { vote -> PostKarmaVote? in
             guard let timestamp = vote[safe: 0] as? Int,
                   let userId = vote[safe: 1] as? Int,
                   let nickname = vote[safe: 2] as? String,
                   let vote = vote[safe: 3] as? Int else {
-                throw ParsingError.failedToCastFields
+                return nil
             }
             return PostKarmaVote(
                 userId: userId,

@@ -190,12 +190,13 @@ public struct TicketParser {
             throw ParsingError.failedToCastFields
         }
         
-        return try contentRaw.map { statusRaw in
+        // Skip malformed entries instead of failing the whole list
+        return contentRaw.compactMap { statusRaw -> TicketStatusHistory? in
             guard let status = statusRaw[safe: 0] as? Int,
                   let handlerId = statusRaw[safe: 2] as? Int,
                   let handlerName = statusRaw[safe: 3] as? String,
                   let changedAt = statusRaw[safe: 1] as? Int else {
-                throw ParsingError.failedToCastFields
+                return nil
             }
             
             return TicketStatusHistory(
