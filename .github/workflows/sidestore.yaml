@@ -61,12 +61,11 @@ jobs:
 
       - name: Build
         run: |
-          set -o pipefail
+          set +e
           xcodebuild build \
             -workspace ForPDA.xcworkspace \
             -scheme ForPDA \
             -configuration Release \
-            -sdk iphoneos \
             -destination 'generic/platform=iOS' \
             -derivedDataPath build \
             -skipPackagePluginValidation \
@@ -77,8 +76,11 @@ jobs:
             CODE_SIGN_ENTITLEMENTS="" \
             DEVELOPMENT_TEAM="" \
             PROVISIONING_PROFILE_SPECIFIER="" \
-            | tee xcodebuild.log | grep -E '(error|warning: unable|BUILD SUCCEEDED|BUILD FAILED)' || true
-          test -d build/Build/Products/Release-iphoneos/ForPDA.app
+            > xcodebuild.log 2>&1
+          STATUS=$?
+          grep -E '(error:|BUILD SUCCEEDED|BUILD FAILED)' xcodebuild.log | sort -u | head -100
+          if [ $STATUS -ne 0 ]; then echo "xcodebuild failed with $STATUS"; exit $STATUS; fi
+          test -f build/Build/Products/Release-iphoneos/ForPDA.app/Info.plist
 
       - name: Package IPA
         env:
