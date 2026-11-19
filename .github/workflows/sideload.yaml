@@ -1,22 +1,22 @@
-name: SideStore IPA
+name: Sideload IPA
 
-# Builds an unsigned .ipa for sideloading (SideStore / AltStore / Sideloadly).
-# The sideloading tool signs the app with your own Apple ID on install,
+# Builds unsigned .ipa files for sideloading (SideStore / AltStore / Sideloadly /
+# TrollStore / Feather / ESign). The sideloading tool signs the app on install,
 # so no certificates or secrets are needed here.
+#
+# Two variants are produced from one build:
+#   *-sideload.ipa  without app extensions: 1 App ID, for free Apple ID accounts
+#   *-full.ipa      with Safari & Notification Service extensions:
+#                   for TrollStore or paid certificates
 
 on:
   push:
     branches: [ develop, 'claude/**' ]
     tags: [ 'v*' ]
   workflow_dispatch:
-    inputs:
-      include_extensions:
-        description: 'Include Safari & Notification extensions (each uses an extra App ID on a free account)'
-        type: boolean
-        default: false
 
 concurrency:
-  group: sidestore-${{ github.ref }}
+  group: sideload-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -82,27 +82,39 @@ jobs:
           if [ $STATUS -ne 0 ]; then echo "xcodebuild failed with $STATUS"; exit $STATUS; fi
           test -f build/Build/Products/Release-iphoneos/ForPDA.app/Info.plist
 
-      - name: Package IPA
-        env:
-          INCLUDE_EXTENSIONS: ${{ inputs.include_extensions || 'false' }}
+      - name: Package IPAs
         run: |
-          rm -rf Payload && mkdir Payload
-          cp -R build/Build/Products/Release-iphoneos/ForPDA.app Payload/
-          if [ "$INCLUDE_EXTENSIONS" != "true" ]; then
-            rm -rf Payload/ForPDA.app/PlugIns
-          fi
-          VERSION=$(/usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' Payload/ForPDA.app/Info.plist)
-          BUILD=$(/usr/libexec/PlistBuddy -c 'Print CFBundleVersion' Payload/ForPDA.app/Info.plist)
-          NAME="ForPDA-${VERSION}-${BUILD}-sidestore.ipa"
-          zip -qry "$NAME" Payload
-          echo "IPA_NAME=$NAME" >> "$GITHUB_ENV"
-          ls -lh "$NAME"
+          APP=build/Build/Products/Release-iphoneos/ForPDA.app
+          VERSION=$(/usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' "$APP/Info.plist")
+          BUILD=$(/usr/libexec/PlistBuddy -c 'Print CFBundleVersion' "$APP/Info.plist")
+          BASE="ForPDA-Mod-${VERSION}-${BUILD}"
+          echo "Extensions in build:"; ls "$APP/PlugIns" 2>/dev/null || echo "  (none)"
 
-      - name: Upload IPA
+          # Full: with extensions
+          rm -rf Payload && mkdir Payload && cp -R "$APP" Payload/
+          zip -qry "${BASE}-full.ipa" Payload
+
+          # Sideload: without extensions
+          rm -rf Payload/ForPDA.app/PlugIns
+          zip -qry "${BASE}-sideload.ipa" Payload
+          rm -rf Payload
+
+          echo "IPA_SIDELOAD=${BASE}-sideload.ipa" >> "$GITHUB_ENV"
+          echo "IPA_FULL=${BASE}-full.ipa" >> "$GITHUB_ENV"
+          echo "VERSION=${VERSION}" >> "$GITHUB_ENV"
+          ls -lh *.ipa
+
+      - name: Upload sideload IPA
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.IPA_NAME }}
-          path: ${{ env.IPA_NAME }}
+          name: ${{ env.IPA_SIDELOAD }}
+          path: ${{ env.IPA_SIDELOAD }}
+
+      - name: Upload full IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.IPA_FULL }}
+          path: ${{ env.IPA_FULL }}
 
       - name: Upload build log on failure
         if: failure()
@@ -118,7 +130,6 @@ jobs:
           if [[ "$GITHUB_REF" == refs/tags/* ]]; then
             TAG="$GITHUB_REF_NAME"
           else
-            VERSION=$(/usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' Payload/ForPDA.app/Info.plist)
             TAG="v${VERSION}-mod.${GITHUB_RUN_NUMBER}"
           fi
           echo "RELEASE_TAG=$TAG" >> "$GITHUB_ENV"
@@ -132,4 +143,6 @@ jobs:
           make_latest: true
           name: ForPDA Mod ${{ env.RELEASE_TAG }}
           body_path: RELEASE_NOTES.md
-          files: ${{ env.IPA_NAME }}
+          files: |
+            ${{ env.IPA_SIDELOAD }}
+            ${{ env.IPA_FULL }}
