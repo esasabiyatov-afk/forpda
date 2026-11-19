@@ -21,7 +21,7 @@ extension String: ParsingDefaultValue { static var parsingDefault: String { "" }
 extension Array: ParsingDefaultValue { static var parsingDefault: [Element] { [] } }
 extension Dictionary: ParsingDefaultValue { static var parsingDefault: [Key: Value] { [:] } }
 
-private let safeCastLogger = Logger(subsystem: "com.subvert.forpda", category: "Parsing")
+private let safeCastLogger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.subvert.forpda", category: "Parsing")
 
 extension Array where Element == Any {
 

@@ -1021,7 +1021,8 @@ struct App {
     /// Name shown on the Home Screen
     static let displayName = "ForPDA Mod"
     static let destinations: Destinations = .iOS
-    static let bundleId = "com.subvert.forpda"
+    /// Separate bundle ID so the mod installs next to the official app
+    static let bundleId = "com.subvert.forpda.mod"
     static let deploymentTargets: DeploymentTargets = .iOS("16.0")
 }
 
