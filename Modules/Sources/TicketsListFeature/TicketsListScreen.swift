@@ -20,7 +20,6 @@ public struct TicketsListScreen: View {
     
     @Perception.Bindable public var store: StoreOf<TicketsListFeature>
     @Environment(\.tintColor) private var tintColor
-    @Environment(\.backgroundColors) private var backgroundColors
     
     @State private var navigationMinimized = false
     
@@ -44,7 +43,7 @@ public struct TicketsListScreen: View {
     public var body: some View {
         WithPerceptionTracking {
             ZStack {
-                backgroundColors.primary
+                Color(.Background.primary)
                     .ignoresSafeArea()
                 
                 if !store.isLoading {
@@ -76,7 +75,7 @@ public struct TicketsListScreen: View {
             }
             .navigationTitle(Text(navigationTitleText(), bundle: .module))
             .navigationBarTitleDisplayMode(.inline)
-            .background(backgroundColors.primary)
+            .background(Color(.Background.primary))
             .toolbar {
                 ToolbarItem {
                     OptionsMenu()
@@ -278,7 +277,7 @@ public struct TicketsListScreen: View {
         .padding(.vertical, 2)
         .padding(.horizontal, 6)
         .background(
-            info.status.maskColor(backgroundColors: backgroundColors)
+            info.status.maskColor
                 .clipShape(RoundedRectangle(cornerRadius: isLiquidGlass ? 10 : 6))
         )
     }
@@ -307,7 +306,7 @@ public struct TicketsListScreen: View {
     @ViewBuilder
     private func Navigation() -> some View {
         PageNavigation(store: store.scope(\.pageNavigation, action: \.pageNavigation))
-            .listRowBackground(backgroundColors.primary)
+            .listRowBackground(Color(.Background.primary))
     }
     
     // MARK: - Nothing Found
@@ -349,11 +348,11 @@ public struct TicketsListScreen: View {
 // MARK: - Extensions
 
 extension TicketStatus {
-    func maskColor(backgroundColors: BackgroundColors) -> Color {
+    var maskColor: Color {
         switch self {
         case .notProcessed: Color(.Main.redAlpha)
         case .processing:   Color(.Main.yellowAlpha)
-        case .processed:    backgroundColors.tertiary
+        case .processed:    Color(.Background.teritary)
         }
     }
     

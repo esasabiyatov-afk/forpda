@@ -17,7 +17,6 @@ public struct BBPanelView: View {
     
     @Perception.Bindable public var store: StoreOf<BBPanelFeature>
     @Environment(\.tintColor) private var tintColor
-    @Environment(\.backgroundColors) private var backgroundColors
     
     @State private var selectedColor: Color = .clear
     
@@ -77,7 +76,7 @@ public struct BBPanelView: View {
                 }
                 .background {
                     RoundedRectangle(cornerRadius: isLiquidGlass ? 28 : 14)
-                        .fill(backgroundColors.primary)
+                        .fill(Color(.Background.primary))
                 }
                 .onAppear {
                     send(.onAppear)
@@ -160,7 +159,7 @@ public struct BBPanelView: View {
     @ViewBuilder
     private func ColorsGrid() -> some View {
         ZStack {
-            backgroundColors.primary
+            Color(.Background.primary)
                 .ignoresSafeArea()
             
             VStack(spacing: 12) {
@@ -250,7 +249,7 @@ public struct BBPanelView: View {
         .padding(.horizontal, 16)
         .background {
             RoundedRectangle(cornerRadius: isLiquidGlass ? 28 : 14)
-                .fill(backgroundColors.primary)
+                .fill(Color(.Background.primary))
         }
         .frame(height: 190)
         .shadow(color: Color(.Labels.primary).opacity(0.15), radius: 10, y: 4)

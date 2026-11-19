@@ -28,7 +28,6 @@ public struct ProfileScreen: View {
     
     @Perception.Bindable public var store: StoreOf<ProfileFeature>
     @Environment(\.tintColor) private var tintColor
-    @Environment(\.backgroundColors) private var backgroundColors
     
     public enum PickerSelection {
         case general, statistics, achievements, curation, logging
@@ -46,7 +45,7 @@ public struct ProfileScreen: View {
     public var body: some View {
         WithPerceptionTracking {
             ZStack {
-                backgroundColors.primary
+                Color(.Background.primary)
                     .ignoresSafeArea()
                 
                 if let user = store.user {
@@ -245,7 +244,7 @@ public struct ProfileScreen: View {
                     .padding(.vertical, 8)
                     .padding(.horizontal, 10)
                     .background(
-                        backgroundColors.tertiary
+                        Color(.Background.teritary)
                             .clipShape(RoundedRectangle(cornerRadius: 12))
                     )
                 }
@@ -342,7 +341,7 @@ public struct ProfileScreen: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .padding(12)
                     .background(
-                        backgroundColors.tertiary
+                        Color(.Background.teritary)
                             .clipShape(RoundedRectangle(cornerRadius: 10))
                     )
                     
@@ -362,7 +361,7 @@ public struct ProfileScreen: View {
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .padding(12)
                         .background(
-                            backgroundColors.tertiary
+                            Color(.Background.teritary)
                                 .clipShape(RoundedRectangle(cornerRadius: 10))
                         )
                     }
@@ -424,7 +423,7 @@ public struct ProfileScreen: View {
         } header: {
             SectionHeader(title: "Restrictions")
         }
-        .listRowBackground(backgroundColors.tertiary)
+        .listRowBackground(Color(.Background.teritary))
         .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
     }
     
@@ -453,7 +452,7 @@ public struct ProfileScreen: View {
         } header: {
             SectionHeader(title: "Personal info")
         }
-        .listRowBackground(backgroundColors.tertiary)
+        .listRowBackground(Color(.Background.teritary))
         .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
     }
     
@@ -471,7 +470,7 @@ public struct ProfileScreen: View {
         } header: {
             SectionHeader(title: "About me")
         }
-        .listRowBackground(backgroundColors.tertiary)
+        .listRowBackground(Color(.Background.teritary))
         .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
     }
     
@@ -488,7 +487,7 @@ public struct ProfileScreen: View {
         } header: {
             SectionHeader(title: "Devices List")
         }
-        .listRowBackground(backgroundColors.tertiary)
+        .listRowBackground(Color(.Background.teritary))
         .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
     }
     
@@ -511,7 +510,7 @@ public struct ProfileScreen: View {
         } header: {
             SectionHeader(title: "Site statistics")
         }
-        .listRowBackground(backgroundColors.tertiary)
+        .listRowBackground(Color(.Background.teritary))
         .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
     }
     
@@ -532,7 +531,7 @@ public struct ProfileScreen: View {
         } header: {
             SectionHeader(title: "Forum statistics")
         }
-        .listRowBackground(backgroundColors.tertiary)
+        .listRowBackground(Color(.Background.teritary))
         .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
     }
     
@@ -558,7 +557,7 @@ public struct ProfileScreen: View {
                                 if let image = state.image {
                                     image.resizable().scaledToFill()
                                 } else {
-                                    backgroundColors.tertiary
+                                    Color(.Background.teritary)
                                 }
                             }
                             .skeleton(with: state.isLoading, shape: .circle)
@@ -599,7 +598,7 @@ public struct ProfileScreen: View {
                 .padding(.vertical, 8)
                 .padding(.horizontal, 16)
                 .background(
-                    backgroundColors.tertiary
+                    Color(.Background.teritary)
                         .clipShape(RoundedRectangle(cornerRadius: 10))
                 )
             }
@@ -619,7 +618,7 @@ public struct ProfileScreen: View {
                 }
             }
         }
-        .listRowBackground(backgroundColors.tertiary)
+        .listRowBackground(Color(.Background.teritary))
         .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
     }
     
@@ -829,7 +828,7 @@ public struct ProfileScreen: View {
             }
         }
         .background(
-            backgroundColors.tertiary
+            Color(.Background.teritary)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
         )
     }

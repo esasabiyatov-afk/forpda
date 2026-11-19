@@ -9,12 +9,12 @@ import Foundation
 
 public enum BackgroundTheme: CaseIterable, Codable, Sendable {
     case blue
-    case black
+    case dark
     
     var _rawValue: String {
         switch self {
         case .blue: return "blue"
-        case .black: return "black"
+        case .dark: return "dark"
         }
     }
 }

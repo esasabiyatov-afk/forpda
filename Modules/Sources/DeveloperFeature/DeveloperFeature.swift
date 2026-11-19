@@ -27,7 +27,7 @@ public struct DeveloperFeature: Reducer, Sendable {
     @ObservableState
     public struct State: Equatable {
         @Shared(.appSettings) public var appSettings: AppSettings
-        @Shared(.appStorage(AppStorageKeys.analyticsId)) var analyticsId: String = UUID().uuidString
+        @Shared(.appStorage("analytics_id")) var analyticsId: String = UUID().uuidString
         
         public var backgroundTaskEntries: [BackgroundTaskEntry] = []
         public var isAnalyticsEnabled: Bool
@@ -100,7 +100,6 @@ public struct DeveloperFeature: Reducer, Sendable {
 public struct DeveloperScreen: View {
     
     @Perception.Bindable public var store: StoreOf<DeveloperFeature>
-    @Environment(\.backgroundColors) private var backgroundColors
     
     public init(store: StoreOf<DeveloperFeature>) {
         self.store = store
@@ -109,7 +108,7 @@ public struct DeveloperScreen: View {
     public var body: some View {
         WithPerceptionTracking {
             ZStack {
-                backgroundColors.primary
+                Color(.Background.primary)
                     .ignoresSafeArea()
                 
                 ScrollView {

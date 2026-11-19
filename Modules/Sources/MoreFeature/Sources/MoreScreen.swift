@@ -21,7 +21,6 @@ public struct MoreScreen: View {
     @Perception.Bindable public var store: StoreOf<MoreFeature>
     
     @Environment(\.tintColor) private var tintColor
-    @Environment(\.backgroundColors) private var backgroundColors
     
     // MARK: - Init
     
@@ -34,7 +33,7 @@ public struct MoreScreen: View {
     public var body: some View {
         WithPerceptionTracking {
             ZStack {
-                backgroundColors.primary
+                Color(.Background.primary)
                     .ignoresSafeArea()
                 
                 List {
@@ -75,7 +74,7 @@ public struct MoreScreen: View {
         Section {
             ProfileButton()
         }
-        .listRowBackground(backgroundColors.tertiary)
+        .listRowBackground(Color(.Background.teritary))
     }
     
     // MARK: - Log In or Profile Button
@@ -212,7 +211,7 @@ public struct MoreScreen: View {
                  }
              }
          }
-         .listRowBackground(backgroundColors.tertiary)
+         .listRowBackground(Color(.Background.teritary))
      }
     
     // MARK: - Settings Section
@@ -224,7 +223,7 @@ public struct MoreScreen: View {
                 send(.settingsButtonTapped)
             }
         }
-        .listRowBackground(backgroundColors.tertiary)
+        .listRowBackground(Color(.Background.teritary))
     }
     
     // MARK: - Links Section
@@ -248,7 +247,7 @@ public struct MoreScreen: View {
                 send(.githubButtonTapped)
             }
         }
-        .listRowBackground(backgroundColors.tertiary)
+        .listRowBackground(Color(.Background.teritary))
     }
     
     // MARK: - Logout Section
@@ -262,7 +261,7 @@ public struct MoreScreen: View {
                 }
             }
         }
-        .listRowBackground(backgroundColors.tertiary)
+        .listRowBackground(Color(.Background.teritary))
     }
     
     // MARK: - Row

@@ -73,9 +73,7 @@ extension ForumFeature {
                         break
                     }
                     
-                case .view(.contextTopicToolsMenu),
-                     .view(.topicSelectionTapped),
-                     .view(.disableMultiSelectionModeButtonTapped):
+                case .view(.contextTopicToolsMenu):
                     // MARK: Moderator tools are skip analytics
                     break
                     
@@ -87,9 +85,6 @@ extension ForumFeature {
                         analytics.log(ForumEvent.menuGoToEnd(topic.id))
                     case .edit:
                         analytics.log(ForumEvent.menuEdit(topic.id))
-                    case .select:
-                        // MARK: Moderator tools are skip analytics
-                        break
                     }
                     
                 case let .view(.contextCommonMenu(option, id, isForum)):

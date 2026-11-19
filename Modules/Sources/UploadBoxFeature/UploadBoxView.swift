@@ -17,7 +17,6 @@ public struct UploadBoxView: View {
     
     @Perception.Bindable public var store: StoreOf<UploadBoxFeature>
     @Environment(\.tintColor) private var tintColor
-    @Environment(\.backgroundColors) private var backgroundColors
     
     @State private var pickerItems: [PhotosPickerItem] = []
     
@@ -108,7 +107,7 @@ public struct UploadBoxView: View {
             .frame(maxWidth: .infinity, minHeight: 144)
             .background {
                 RoundedRectangle(cornerRadius: 14)
-                    .fill(backgroundColors.tertiary)
+                    .fill(Color(.Background.teritary))
             }
             .overlay {
                 RoundedRectangle(cornerRadius: 14)
@@ -133,7 +132,7 @@ public struct UploadBoxView: View {
                 }
                 .frame(minWidth: 48, maxWidth: 48, minHeight: 144)
                 .padding(.horizontal, 12)
-                .background(backgroundColors.tertiary)
+                .background(Color(.Background.teritary))
                 .clipShape(RoundedRectangle(cornerRadius: 14))
                 .disabled(store.isAnyFileUploading)
                 
@@ -200,14 +199,14 @@ public struct UploadBoxView: View {
         .frame(minWidth: 144, maxWidth: 144, minHeight: 144)
         .background(
             RoundedRectangle(cornerRadius: 14)
-                .fill(backgroundColors.tertiary)
+                .fill(Color(.Background.teritary))
         )
         .overlay(alignment: .topTrailing) {
             Button {
                 send(.removeFileButtonTapped(file))
             } label: {
                 Circle()
-                    .fill(backgroundColors.tertiary)
+                    .fill(Color(.Background.teritary))
                     .frame(width: 28, height: 28)
                     .overlay {
                         Image(systemSymbol: .xmark)

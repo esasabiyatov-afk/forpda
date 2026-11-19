@@ -16,7 +16,6 @@ public struct SettingsScreen: View {
     @Perception.Bindable public var store: StoreOf<SettingsFeature>
     @Environment(\.tintColor) private var tintColor
     @Environment(\.colorScheme) private var colorScheme
-    @Environment(\.backgroundColors) private var backgroundColors
     
     public init(store: StoreOf<SettingsFeature>) {
         self.store = store
@@ -25,7 +24,7 @@ public struct SettingsScreen: View {
     public var body: some View {
         WithPerceptionTracking {
             ZStack {
-                backgroundColors.primary
+                Color(.Background.primary)
                     .ignoresSafeArea()
                 
                 List {
@@ -189,7 +188,7 @@ public struct SettingsScreen: View {
         }
         // TODO: Wacky animation
         .background(
-            backgroundColors.primary
+            Color(.Background.primary)
                 .animation(.default, value: colorScheme)
         )
     }
@@ -242,7 +241,7 @@ public struct SettingsScreen: View {
         Section {
             Row(symbol: ._1Circle, title: "Starting page", type: .startPagePicker)
             
-            Row(symbol: .paintpalette, title: "Background color", type: .backgroundPicker)
+            // Row(symbol: .paintpalette, title: "Background color", type: .backgroundPicker)
             
             // Row(symbol: .rectangleAndHandPointUpLeft, title: "Topic opening", type: .topicOpening)
             
@@ -264,7 +263,7 @@ public struct SettingsScreen: View {
         } header: {
             Header(title: "Basic")
         }
-        .listRowBackground(backgroundColors.tertiary)
+        .listRowBackground(Color(.Background.teritary))
     }
     
     // MARK: - Advanced Section
@@ -300,7 +299,7 @@ public struct SettingsScreen: View {
                     #endif
                 }
         }
-        .listRowBackground(backgroundColors.tertiary)
+        .listRowBackground(Color(.Background.teritary))
     }
     
     // MARK: - About App Section
@@ -312,7 +311,7 @@ public struct SettingsScreen: View {
         } header: {
             Header(title: "About app")
         }
-        .listRowBackground(backgroundColors.tertiary)
+        .listRowBackground(Color(.Background.teritary))
     }
 }
 
@@ -343,14 +342,14 @@ extension BackgroundTheme {
     var title: LocalizedStringKey {
         switch self {
         case .blue: return "Blue"
-        case .black: return "Black"
+        case .dark: return "Dark.Theme"
         }
     }
     
     var image: Image {
         switch self {
         case .blue: Image(.Settings.circleBlue)
-        case .black: Image(.Settings.circleBlack)
+        case .dark: Image(.Settings.circleDark)
         }
     }
 }

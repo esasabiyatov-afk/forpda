@@ -30,15 +30,10 @@ public struct TopicScreen: View {
     @Perception.Bindable public var store: StoreOf<TopicFeature>
     
     @Environment(\.tintColor) private var tintColor
-    @Environment(\.backgroundColors) private var backgroundColors
+    @State private var scrollProxy: ScrollViewProxy?
     @State private var scrollScale: CGFloat = 1
     @State private var showKarmaConfirmation = false
     @State private var navigationMinimized = false
-
-    private struct ScrollRequest: Equatable {
-        let postId: Int?
-        let isLoadingTopic: Bool
-    }
     
     // MARK: - Computed Properties
     
@@ -83,7 +78,7 @@ public struct TopicScreen: View {
     public var body: some View {
         WithPerceptionTracking {
             ZStack {
-                backgroundColors.primary
+                Color(.Background.primary)
                     .ignoresSafeArea()
                 
                 ScrollViewReader { proxy in
@@ -118,13 +113,8 @@ public struct TopicScreen: View {
                             .padding(.bottom, 16)
                         }
                         ._inScrollContentDetector(isEnabled: shouldShowFloatingNavigation, state: $navigationMinimized)
-                        .task(
-                            id: ScrollRequest(
-                                postId: store.postId,
-                                isLoadingTopic: store.isLoadingTopic
-                            )
-                        ) {
-                            await scrollAndAnimate(using: proxy)
+                        .onAppear {
+                            scrollProxy = proxy
                         }
                     }
                 }
@@ -148,6 +138,7 @@ public struct TopicScreen: View {
                             send(.searchButtonTapped)
                         } label: {
                             Image(systemSymbol: .magnifyingglass)
+                                .foregroundStyle(foregroundStyle())
                         }
                     }
                     
@@ -170,6 +161,8 @@ public struct TopicScreen: View {
                     .padding(.bottom, 8)
                 }
             }
+            .onChange(of: store.postId)         { _ in Task { await scrollAndAnimate() } }
+            .onChange(of: store.isLoadingTopic) { _ in Task { await scrollAndAnimate() } }
             .onFirstAppear {
                 send(.onFirstAppear)
             } onNextAppear: {
@@ -185,10 +178,8 @@ public struct TopicScreen: View {
         Menu {
             if let topic = store.topic, store.isUserAuthorized, topic.canPost {
                 Section {
-                    if topic.canCreateSimplePost {
-                        ContextButton(text: LocalizedStringResource("Write Post", bundle: .module), symbol: .plusCircle) {
-                            send(.contextMenu(.writePost))
-                        }
+                    ContextButton(text: LocalizedStringResource("Write Post", bundle: .module), symbol: .plusCircle) {
+                        send(.contextMenu(.writePost))
                     }
                     
                     if let postTemplate = topic.postTemplateName {
@@ -262,6 +253,7 @@ public struct TopicScreen: View {
             }
         } label: {
             Image(systemSymbol: .ellipsisCircle)
+                .foregroundStyle(foregroundStyle())
         }
     }
     
@@ -305,6 +297,15 @@ public struct TopicScreen: View {
                 Text("Tools", bundle: .module)
                 Image(systemSymbol: .shield)
             }
+        }
+    }
+    
+    @available(iOS, deprecated: 26.0)
+    private func foregroundStyle() -> AnyShapeStyle {
+        if isLiquidGlass {
+            return AnyShapeStyle(.foreground)
+        } else {
+            return AnyShapeStyle(tintColor)
         }
     }
     
@@ -410,7 +411,7 @@ public struct TopicScreen: View {
     @ViewBuilder
     private func PostSeparator() -> some View {
         Rectangle()
-            .foregroundStyle(backgroundColors.tertiary)
+            .foregroundStyle(Color(.Separator.post))
             .frame(height: 10)
     }
     
@@ -429,7 +430,7 @@ public struct TopicScreen: View {
                 userSessionInfo: userSessionInfo,
                 canPostInTopic: store.topic?.canPost ?? false,
                 isUserAuthorized: store.isUserAuthorized,
-                isContextMenuAvailable: !isNewPostPresented
+                isContextMenuAvailable: true
             ),
             action: { action in
                 switch action {
@@ -460,42 +461,25 @@ public struct TopicScreen: View {
     
     // MARK: - Helpers
     
-    @MainActor
-    private func scrollAndAnimate(using proxy: ScrollViewProxy) async {
-        guard let postId = store.postId, !store.isLoadingTopic else {
-            scrollScale = 1
-            return
-        }
-
-        // Give SwiftUI a layout pass after the post list is inserted
-        await Task.yield()
-        guard !Task.isCancelled else { return }
-
-        // Do not animate the LazyVStack while it resolves the destination geometry
-        var transaction = Transaction()
-        transaction.disablesAnimations = true
-        withTransaction(transaction) {
-            proxy.scrollTo(postId, anchor: .top)
-        }
-
-        // Let the scroll position settle before highlighting the destination
-        await Task.yield()
-        guard !Task.isCancelled else { return }
-
-        let duration = 0.25
-        let animation = Animation.easeInOut(duration: duration)
-
-        do {
+    private func scrollAndAnimate() async {
+        guard let postId = store.postId, !store.isLoadingTopic else { return }
+        
+        withAnimation { scrollProxy?.scrollTo(postId, anchor: .top) }
+        
+        Task {
+            // Wait for scroll animation
+            try? await Task.sleep(for: .seconds(0.5))
+            
+            let duration = 0.25
+            let animation = Animation.easeInOut(duration: duration)
             withAnimation(animation) { scrollScale = 0.95 }
-            try await Task.sleep(for: .seconds(duration))
-            withAnimation(animation) { scrollScale = 1 }
-            try await Task.sleep(for: .seconds(duration))
-            try Task.checkCancellation()
-            send(.finishedPostAnimation)
-        } catch is CancellationError {
-            scrollScale = 1
-        } catch {
-            scrollScale = 1
+            
+            Task {
+                try? await Task.sleep(for: .seconds(duration))
+                withAnimation(animation) { scrollScale = 1 }
+                try? await Task.sleep(for: .seconds(duration))
+                send(.finishedPostAnimation, animation: .default)
+            }
         }
     }
 }

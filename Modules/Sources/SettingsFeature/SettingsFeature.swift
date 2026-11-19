@@ -193,7 +193,8 @@ public struct SettingsFeature: Reducer, Sendable {
                 return .none
                 
             case .binding(\.backgroundTheme):
-                state.$appSettings.withLock { $0.backgroundTheme = state.backgroundTheme }
+                state.backgroundTheme = .blue
+                state.destination = .alert(.notImplemented)
                 return .none
                 
             case .binding(\.startPage):

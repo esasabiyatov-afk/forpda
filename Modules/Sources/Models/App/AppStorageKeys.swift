@@ -9,5 +9,4 @@ import Foundation
 
 public struct AppStorageKeys {
     public static let analyticsId = "analytics_id"
-    public static let deviceToken = "device_token"
 }

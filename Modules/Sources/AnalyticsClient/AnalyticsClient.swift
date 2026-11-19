@@ -89,12 +89,8 @@ extension AnalyticsClient: DependencyKey {
                 crumb.level = .info
                 crumb.category = category
                 crumb.message = message
+                crumb.data = data
                 crumb.type = type
-                if let data {
-                    for property in data {
-                        crumb.setData(value: property.value, key: property.key)
-                    }
-                }
                 SentrySDK.addBreadcrumb(crumb)
             },
             reportFullyDisplayed: {
@@ -218,6 +214,7 @@ extension AnalyticsClient {
                 $0.profileAppStarts = true
             }
             options.enableAppHangTracking = false // False positives
+            options.enableReportNonFullyBlockingAppHangs = false // False positives
             options.enablePreWarmedAppStartTracing = true
             options.enableCoreDataTracing = false // I don't have CoreData
             options.enableUserInteractionTracing = false // Doesn't work with SwiftUI
@@ -225,8 +222,11 @@ extension AnalyticsClient {
             options.enableTimeToFullDisplayTracing = true
             options.tracePropagationTargets = ["https://4pda.to"] // Dismiss analytics requests
             options.swiftAsyncStacktraces = true
+            options.attachScreenshot = true
             options.tracesSampleRate = 1.0
             options.diagnosticLevel = .warning
+            
+            options.experimental.enableWatchdogTerminationsV2 = true
             
             // Filter out posthog http crumbs
             options.beforeBreadcrumb = {

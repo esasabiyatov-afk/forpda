@@ -20,7 +20,6 @@ public struct SearchResultScreen: View {
     @Perception.Bindable public var store: StoreOf<SearchResultFeature>
     
     @Environment(\.tintColor) private var tintColor
-    @Environment(\.backgroundColors) private var backgroundColors
     
     @State private var navigationMinimized = false
     
@@ -44,25 +43,24 @@ public struct SearchResultScreen: View {
     public var body: some View {
         WithPerceptionTracking {
             ZStack {
-                backgroundColors.primary
+                Color(.Background.primary)
                     .ignoresSafeArea()
                 
                 if !store.isLoading {
                     if !store.content.isEmpty {
-                        ScrollView {
-                            LazyVStack(spacing: 0) {
-                                if shouldShowInlineNavigation {
-                                    Navigation()
-                                }
-
-                                ContentSection()
-
-                                if shouldShowInlineNavigation {
-                                    Navigation()
-                                }
+                        List {
+                            if shouldShowInlineNavigation {
+                                Navigation()
                             }
-                            .frame(maxWidth: .infinity)
+                            
+                            ContentSection()
+                            
+                            if shouldShowInlineNavigation {
+                                Navigation()
+                            }
                         }
+                        .listStyle(.plain)
+                        .scrollContentBackground(.hidden)
                         ._inScrollContentDetector(isEnabled: shouldShowFloatingNavigation, state: $navigationMinimized)
                     } else {
                         NothingFound()
@@ -77,7 +75,7 @@ public struct SearchResultScreen: View {
             }
             .navigationTitle(Text("Search", bundle: .module))
             .navigationBarTitleDisplayMode(.inline)
-            .background(backgroundColors.primary)
+            .background(Color(.Background.primary))
             .toolbar {
                 if store.search.on != .site {
                     ToolbarItem {
@@ -117,28 +115,19 @@ public struct SearchResultScreen: View {
     // MARK: - Search Content Section
     
     private func ContentSection() -> some View {
-        LazyVStack(spacing: 0) {
-            ForEach(Array(store.content.enumerated()), id: \.offset) { index, type in
+        Section {
+            ForEach(Array(store.content.enumerated()), id: \.element) { index, type in
                 switch type {
                 case .post(let post):
-                    VStack(spacing: 0) {
-                        PostRow(post)
-                            .padding(.horizontal, 16)
-                            .background(post.colorMask(backgroundColors: backgroundColors))
-
-                        PostSeparator()
-                    }
-                    
+                    PostRow(post)
                 case .topic(let topic):
                     TopicRow(index, topic)
-                        .padding(.horizontal, 16)
-                    
                 case .article(let article):
                     ArticleRow(article)
-                        .padding(.horizontal, 16)
                 }
             }
         }
+        .padding(.horizontal, 16)
     }
     
     // MARK: - Post Row
@@ -185,16 +174,10 @@ public struct SearchResultScreen: View {
                 )
             }
         }
-        .padding(.top, 12)
-        .padding(.bottom, 16)
+        .padding(.vertical, 12)
+        .listRowInsets(.init(top: 0, leading: 0, bottom: 0, trailing: 0))
+        .listRowBackground(post.colorMask)
         .disabled(post.topicName.isEmpty && post.isDisabled)
-    }
-
-    @ViewBuilder
-    private func PostSeparator() -> some View {
-        Rectangle()
-            .foregroundStyle(backgroundColors.tertiary)
-            .frame(height: 10)
     }
     
     // MARK: - Topic Row
@@ -215,7 +198,7 @@ public struct SearchResultScreen: View {
                 )
                 .padding(.leading, 16)
                 .background(
-                    backgroundColors.tertiary
+                    Color(.Background.teritary)
                         .clipShape(
                             .rect(
                                 topLeadingRadius: index == 0 ? radius : 0,
@@ -226,7 +209,9 @@ public struct SearchResultScreen: View {
                         )
                 )
             }
-            .background(backgroundColors.primary)
+            .listSectionSeparator(.hidden)
+            .listRowInsets(.init(top: 0, leading: 0, bottom: 0, trailing: 0))
+            .listRowBackground(Color(.Background.primary))
         }
     }
     
@@ -255,7 +240,9 @@ public struct SearchResultScreen: View {
         }
         .buttonStyle(.plain)
         .padding(.bottom, 14)
-        .background(backgroundColors.primary)
+        .listRowSeparator(.hidden)
+        .listRowInsets(.init(top: 0, leading: 0, bottom: 0, trailing: 0))
+        .listRowBackground(Color(.Background.primary))
     }
     
     private func settingsToRow(_ rowType: AppSettings.ArticleListRowType) -> ArticleRowView.RowType {
@@ -267,9 +254,7 @@ public struct SearchResultScreen: View {
     @ViewBuilder
     private func Navigation() -> some View {
         PageNavigation(store: store.scope(\.pageNavigation, action: \.pageNavigation))
-            .padding(.horizontal, 16)
-            .padding(.vertical, 8)
-            .background(backgroundColors.primary)
+            .listRowBackground(Color(.Background.primary))
     }
     
     // MARK: - Nothing Found
@@ -313,13 +298,13 @@ extension UIContent.UIHybridPost {
         return !post.post.canModerate && (post.post.isDeleted || post.post.isHidden)
     }
     
-    func colorMask(backgroundColors: BackgroundColors) -> Color {
+    var colorMask: Color {
         return if post.post.isDeleted {
             Color(.Background.quaternary)
         } else if post.post.isHidden {
             Color(.Main.redAlpha)
         } else {
-            backgroundColors.primary
+            Color(.Background.primary)
         }
     }
 }

@@ -19,7 +19,6 @@ public struct HistoryScreen: View {
     
     @Perception.Bindable public var store: StoreOf<HistoryFeature>
     @Environment(\.tintColor) private var tintColor
-    @Environment(\.backgroundColors) private var backgroundColors
     @State private var navigationMinimized = false
     
     private var shouldShowInlineNavigation: Bool {
@@ -42,7 +41,7 @@ public struct HistoryScreen: View {
     public var body: some View {
         WithPerceptionTracking {
             ZStack {
-                backgroundColors.primary
+                Color(.Background.primary)
                     .ignoresSafeArea()
                 
                 List {
@@ -95,7 +94,7 @@ public struct HistoryScreen: View {
     private func Navigation() -> some View {
         if shouldShowInlineNavigation {
             PageNavigation(store: store.scope(\.pageNavigation, action: \.pageNavigation))
-                .listRowBackground(backgroundColors.primary)
+                .listRowBackground(Color(.Background.primary))
         }
     }
     
@@ -118,7 +117,7 @@ public struct HistoryScreen: View {
         } header: {
             Header(title: history.seenDate.formattedDateOnly())
         }
-        .listRowBackground(backgroundColors.tertiary)
+        .listRowBackground(Color(.Background.teritary))
     }
     
     // MARK: - Empty History

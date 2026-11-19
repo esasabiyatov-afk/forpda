@@ -430,7 +430,8 @@ public struct AppFeature: Reducer, Sendable {
             case let .appDelegate(.userNotification(identifier)):
                 do {
                     let deeplink = try DeeplinkHandler().handleNotification(identifier)
-                    return showScreenForDeeplink(deeplink, sourceURL: URL(string: identifier)!, state: &state)
+                    let sourceURL = URL(string: identifier) ?? URL(string: "https://4pda.to")!
+                    return showScreenForDeeplink(deeplink, sourceURL: sourceURL, state: &state)
                 } catch {
                     analyticsClient.capture(error)
                     state.alert = AlertState {
@@ -442,8 +443,7 @@ public struct AppFeature: Reducer, Sendable {
                 // MARK: - ScenePhase
                 
             case let .scenePhaseDidChange(from: _, to: newPhase):
-                let isLoggedIn = state.userSession != nil
-                return .run { send in
+                return .run { [isLoggedIn = state.userSession != nil] send in
                     if newPhase == .active {
                         try? await apiClient.connect(inBackground: false)
                         notificationCenter.post(name: .sceneBecomeActive, object: nil)
@@ -455,17 +455,16 @@ public struct AppFeature: Reducer, Sendable {
                     }
                     
                     if newPhase == .background {
-                        if isLoggedIn {
-                            await send(.registerBackgroundTask)
-                        }
+//                        if isLoggedIn {
+//                            await send(.registerBackgroundTask)
+//                        }
                         await apiClient.disconnect()
                     }
                 }
                 
             case .registerBackgroundTask:
                 // return .send(.syncUnreadTaskInvoked) // For test purposes
-                guard state.userSession != nil else { return .none }
-                guard state.appSettings.notificationsDeliveryMethod == .background else { return .none }
+                guard state.appSettings.backgroundNotifications2 else { return .none }
                 
                 let request = BGAppRefreshTaskRequest(identifier: state.notificationsId)
                 request.earliestBeginDate = .now.addingTimeInterval(15 * 60) // 15 minutes by default
@@ -480,16 +479,6 @@ public struct AppFeature: Reducer, Sendable {
                 return .none
                 
             case .backgroundTaskInvoked:
-                guard state.userSession != nil else { return .none }
-                
-                switch state.appSettings.notificationsDeliveryMethod {
-                case .push:
-                    BGTaskScheduler.shared.cancel(taskRequestWithIdentifier: state.notificationsId)
-                    return .none
-                case .background:
-                    break
-                }
-                
                 return .run { [appSettings = state.appSettings] send in
                     do {
                         

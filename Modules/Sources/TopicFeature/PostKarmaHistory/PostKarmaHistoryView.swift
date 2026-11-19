@@ -18,7 +18,6 @@ public struct PostKarmaHistoryView: View {
     
     @Perception.Bindable public var store: StoreOf<PostKarmaHistoryFeature>
     @Environment(\.tintColor) private var tintColor
-    @Environment(\.backgroundColors) private var backgroundColors
     
     // MARK: - Init
     
@@ -31,7 +30,7 @@ public struct PostKarmaHistoryView: View {
     public var body: some View {
         WithPerceptionTracking {
             ZStack {
-                backgroundColors.primary
+                Color(.Background.primary)
                     .ignoresSafeArea()
                 
                 List(store.history, id: \.id) { vote in

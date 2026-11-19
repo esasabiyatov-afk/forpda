@@ -19,7 +19,6 @@ public enum FavoritesEvent: Event {
     case linkCopied(Int, Bool)
     case delete(Int)
     
-    case goToFirst(Int)
     case goToEnd(Int)
     case notify(Int, Int, String)
     case notifyHatUpdate(Int)

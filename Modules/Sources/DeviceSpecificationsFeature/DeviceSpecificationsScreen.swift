@@ -19,7 +19,6 @@ public struct DeviceSpecificationsScreen: View {
     
     @Perception.Bindable public var store: StoreOf<DeviceSpecificationsFeature>
     @Environment(\.tintColor) private var tintColor
-    @Environment(\.backgroundColors) private var backgroundColors
     
     // MARK: - Init
     
@@ -32,7 +31,7 @@ public struct DeviceSpecificationsScreen: View {
     public var body: some View {
         WithPerceptionTracking {
             ZStack {
-                backgroundColors.primary
+                Color(.Background.primary)
                     .ignoresSafeArea()
                 
                 if let specifications = store.specifications, !store.isLoading {
@@ -49,7 +48,7 @@ public struct DeviceSpecificationsScreen: View {
             }
             .navigationTitle(Text(navigationTitleText()))
             .navigationBarTitleDisplayMode(.inline)
-            .background(backgroundColors.primary)
+            .background(Color(.Background.primary))
             .fullScreenCover(item: $store.destination.gallery, id: \.self) { model in
                 WithPerceptionTracking {
                     TabViewGallery(model: model)
@@ -111,7 +110,7 @@ public struct DeviceSpecificationsScreen: View {
         ._buttonStyle(myDevice ? .borderedProminent : .bordered)
         .tint(tintColor)
         .disabled(store.isMyDeviceLoading || store.isDevicesLimit)
-        .background(backgroundColors.primary, in: Capsule())
+        .background(Color(.Background.primary), in: Capsule())
         .frame(height: 48)
         .padding(.vertical, 8)
         .padding(.horizontal, 16)
@@ -136,7 +135,7 @@ public struct DeviceSpecificationsScreen: View {
         .padding(.horizontal, 12)
         .padding(.vertical, 19)
         .background(
-            backgroundColors.tertiary
+            Color(.Background.teritary)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
         )
         .listRowBackground(Color.clear)
@@ -193,7 +192,7 @@ public struct DeviceSpecificationsScreen: View {
         } header: {
             SectionHeader(title: spec.title)
         }
-        .listRowBackground(backgroundColors.tertiary)
+        .listRowBackground(Color(.Background.teritary))
         .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
     }
     

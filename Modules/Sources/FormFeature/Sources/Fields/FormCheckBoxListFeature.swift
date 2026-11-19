@@ -92,7 +92,6 @@ struct FormCheckBoxListRow: View {
     
     @Perception.Bindable var store: StoreOf<FormCheckBoxListFeature>
     @Environment(\.tintColor) private var tintColor
-    @Environment(\.backgroundColors) private var backgroundColors
     
     @State var isChecked = false
     
@@ -125,7 +124,7 @@ struct FormCheckBoxListRow: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .background {
                     RoundedRectangle(cornerRadius: 14)
-                        .fill(backgroundColors.tertiary)
+                        .fill(Color(.Background.teritary))
                 }
             }
         }

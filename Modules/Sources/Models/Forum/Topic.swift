@@ -28,11 +28,7 @@ public struct Topic: Codable, Sendable, Identifiable, Hashable {
     }
     
     public var canPost: Bool {
-        return flag.contains(.canPost)
-    }
-    
-    public var canCreateSimplePost: Bool {
-        return !flag.contains(.marker)
+        return flag.contains(.canPost) && !flag.contains(.marker)
     }
     
     public var canDelete: Bool {

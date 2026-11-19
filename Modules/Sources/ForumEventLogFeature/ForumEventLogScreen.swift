@@ -16,7 +16,6 @@ public struct ForumEventLogScreen: View {
     
     @Perception.Bindable public var store: StoreOf<ForumEventLogFeature>
     @Environment(\.tintColor) private var tintColor
-    @Environment(\.backgroundColors) private var backgroundColors
     
     public init(store: StoreOf<ForumEventLogFeature>) {
         self.store = store
@@ -25,7 +24,7 @@ public struct ForumEventLogScreen: View {
     public var body: some View {
         WithPerceptionTracking {
             ZStack {
-                backgroundColors.primary
+                Color(.Background.primary)
                     .ignoresSafeArea()
                 
                 List(store.eventLog, id: \.self) { event in

@@ -17,7 +17,6 @@ public struct DeviceTypeScreen: View {
     
     @Perception.Bindable public var store: StoreOf<DeviceTypeFeature>
     @Environment(\.tintColor) private var tintColor
-    @Environment(\.backgroundColors) private var backgroundColors
     
     public init(store: StoreOf<DeviceTypeFeature>) {
         self.store = store
@@ -26,7 +25,7 @@ public struct DeviceTypeScreen: View {
     public var body: some View {
         WithPerceptionTracking {
             ZStack {
-                backgroundColors.primary
+                Color(.Background.primary)
                     .ignoresSafeArea()
                 
                 List {
@@ -46,7 +45,7 @@ public struct DeviceTypeScreen: View {
                 .scrollContentBackground(.hidden)
             }
             .navigationTitle(Text(navigationTitleText()))
-            .background(backgroundColors.primary)
+            .background(Color(.Background.primary))
             .overlay {
                 if store.isLoading {
                     PDALoader()
@@ -70,7 +69,7 @@ public struct DeviceTypeScreen: View {
                 }
             }
         }
-        .listRowBackground(backgroundColors.tertiary)
+        .listRowBackground(Color(.Background.teritary))
         .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
     }
     
@@ -103,7 +102,7 @@ public struct DeviceTypeScreen: View {
                 }
             }
         }
-        .listRowBackground(backgroundColors.tertiary)
+        .listRowBackground(Color(.Background.teritary))
         .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
     }
     
@@ -134,7 +133,7 @@ public struct DeviceTypeScreen: View {
                 }
             }
         }
-        .listRowBackground(backgroundColors.tertiary)
+        .listRowBackground(Color(.Background.teritary))
         .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
     }
     
@@ -175,7 +174,7 @@ public struct DeviceTypeScreen: View {
         .padding(.horizontal, 12)
         .padding(.vertical, 19)
         .background(
-            backgroundColors.tertiary
+            Color(.Background.teritary)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
         )
         .listRowBackground(Color.clear)
@@ -217,7 +216,7 @@ public struct DeviceTypeScreen: View {
             .buttonStyle(.bordered)
             .tint(tintColor)
             .frame(height: 48)
-            .background(backgroundColors.primary)
+            .background(Color(.Background.primary))
             .animation(.default, value: store.categorySelection)
         }
     }
@@ -302,7 +301,7 @@ public struct DeviceTypeScreen: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(12)
         .background(
-            backgroundColors.tertiary
+            Color(.Background.teritary)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
         )
     }

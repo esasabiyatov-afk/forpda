@@ -9,7 +9,6 @@ import SwiftUI
 import NukeUI
 import ComposableArchitecture
 import Models
-import SharedUI
 
 struct KeyboardView: View {
     
@@ -19,7 +18,6 @@ struct KeyboardView: View {
     @FocusState.Binding var focus: ArticleFeature.State.Field?
     @Binding var isScrollDownVisible: Bool
     @Environment(\.tintColor) private var tintColor
-    @Environment(\.backgroundColors) private var backgroundColors
     
     var onScrollDownTapped: () -> Void
     
@@ -57,7 +55,7 @@ struct KeyboardView: View {
                     .padding(.horizontal, 12)
                     .padding(.top, 8)
                     .padding(.bottom, 6)
-                    .background(backgroundColors.primaryAlpha)
+                    .background(Color(.Background.primaryAlpha))
                     .background(.ultraThinMaterial)
                 }
             }
@@ -74,7 +72,7 @@ struct KeyboardView: View {
             onScrollDownTapped()
         } label: {
             Circle()
-                .fill(backgroundColors.primary)
+                .fill(Color(.Background.primary))
                 .frame(width: 44, height: 44)
                 .overlay {
                     Image(systemSymbol: .arrowDown)
@@ -145,7 +143,7 @@ struct KeyboardView: View {
         .focused($focus, equals: ArticleFeature.State.Field.comment)
         .padding(.horizontal, 8)
         .padding(.vertical, 7)
-        .background(backgroundColors.tertiary)
+        .background(Color(.Background.teritary))
         .clipShape(RoundedRectangle(cornerRadius: 18))
         .overlay {
             RoundedRectangle(cornerRadius: 18)

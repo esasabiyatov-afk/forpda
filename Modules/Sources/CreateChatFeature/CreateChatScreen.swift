@@ -17,7 +17,6 @@ public struct CreateChatScreen: View {
     @Perception.Bindable public var store: StoreOf<CreateChatFeature>
     
     @Environment(\.tintColor) private var tintColor
-    @Environment(\.backgroundColors) private var backgroundColors
     
     @FocusState public var focus: CreateChatFeature.Field?
     
@@ -32,7 +31,7 @@ public struct CreateChatScreen: View {
     public var body: some View {
         WithPerceptionTracking {
             ZStack {
-                backgroundColors.primary
+                Color(.Background.primary)
                     .ignoresSafeArea()
                 
                 ScrollView {
@@ -69,7 +68,7 @@ public struct CreateChatScreen: View {
                                                     .padding(.horizontal, 16)
                                                     .padding(.vertical, 12)
                                                     .frame(maxWidth: .infinity, alignment: .leading)
-                                                    .background(backgroundColors.tertiary)
+                                                    .background(Color(.Background.teritary))
                                                     .contentShape(Rectangle())
                                             }
                                             .buttonStyle(.plain)

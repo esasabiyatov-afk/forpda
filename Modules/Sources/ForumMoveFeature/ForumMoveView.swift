@@ -17,7 +17,6 @@ public struct ForumMoveView: View {
     
     @Perception.Bindable public var store: StoreOf<ForumMoveFeature>
     @Environment(\.tintColor) private var tintColor
-    @Environment(\.backgroundColors) private var backgroundColors
     
     @FocusState private var focus: ForumMoveFeature.State.Field?
     
@@ -35,7 +34,7 @@ public struct ForumMoveView: View {
                 InputField()
                     .padding(.bottom, 28)
                     
-                if case .topics = store.type {
+                if case .topic = store.type {
                     Row("Save link", value: $store.isSaveLinkForTopic)
                         .padding(.bottom, 64)
                 }
@@ -45,7 +44,7 @@ public struct ForumMoveView: View {
             .padding(.horizontal, 16)
             .background {
                 if !isLiquidGlass {
-                    backgroundColors.primary
+                    Color(.Background.primary)
                 }
             }
             ._toolbarTitleDisplayMode(.inline)
@@ -109,18 +108,16 @@ public struct ForumMoveView: View {
     private func InputField() -> some View {
         VStack(spacing: 6) {
             let header: LocalizedStringKey = switch store.type {
-            case .topics: "Enter the forum link"
-            case .posts:  "Enter the topic link"
+            case .topic: "Enter the forum link"
+            case .posts: "Enter the topic link"
             }
             Header(title: header)
             
-            SingleLineField(
+            Field(
                 content: $store.inputUrl,
                 placeholder: LocalizedStringResource("Enter...", bundle: .module),
                 focusEqual: ForumMoveFeature.State.Field.url,
-                focus: $focus,
-                keyboardType: .URL,
-                characterLimit: 250
+                focus: $focus
             )
             
             if let error = store.error {
@@ -207,8 +204,8 @@ public struct ForumMoveView: View {
     
     private func navigationTitleText() -> LocalizedStringKey {
         return switch store.type {
-        case let .posts(ids):  ids.count > 1 ? "Move Posts (\(ids.count))" : "Move Post"
-        case let .topics(ids): ids.count > 1 ? "Move Topics (\(ids.count))" : "Move Topic"
+        case .posts: "Move Posts"
+        case .topic: "Move Topic"
         }
     }
 }
@@ -233,7 +230,7 @@ private extension ForumMoveFeature.URLValidationErrorReason {
         ForumMoveView(
             store: Store(
                 initialState: ForumMoveFeature.State(
-                    type: .topics([1])
+                    type: .topic(1)
                 )
             ) {
                 ForumMoveFeature()

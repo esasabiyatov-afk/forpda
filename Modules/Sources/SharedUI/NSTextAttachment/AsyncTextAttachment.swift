@@ -106,15 +106,17 @@ public class AsyncTextAttachment: NSTextAttachment, @unchecked Sendable {
         
         var displaySizeChanged = false
         
-        let image = UIImage(data: data) ?? UIImage(resource: .imageNotLoaded)
-        
-        contents = image.jpegData(compressionQuality: 1)
+        contents = data
         fileType = UTType(filenameExtension: url.pathExtension)?.identifier
         
-        if displaySize == nil {
-            displaySizeChanged = true
+        if let image = UIImage(data: data) {
+            if displaySize == nil {
+                displaySizeChanged = true
+            }
+            originalImageSize = image.size
+        } else {
+            fatalError("Couldn't create attachment image")
         }
-        originalImageSize = image.size
         
         showPlaceholder = false
         isDownloading = false

@@ -19,7 +19,6 @@ public struct UserPunishmentScreen: View {
     @Perception.Bindable public var store: StoreOf<UserPunishmentFeature>
     @FocusState private var focus: UserPunishmentFeature.State.Field?
     @Environment(\.tintColor) private var tintColor
-    @Environment(\.backgroundColors) private var backgroundColors
     
     // MARK: - Init
     
@@ -67,7 +66,7 @@ public struct UserPunishmentScreen: View {
                     .disabled(store.isSending)
                 }
             }
-            .background(backgroundColors.primary)
+            .background(Color(.Background.primary))
             .disabled(store.isSending)
             .animation(.default, value: store.isSending)
             .bind($store.focus, to: $focus)
@@ -407,7 +406,7 @@ public struct UserPunishmentScreen: View {
                 .padding(.trailing, 11)
         }
         .frame(minHeight: 60)
-        .background(backgroundColors.tertiary)
+        .background(Color(.Background.teritary))
         .cornerRadius(isLiquidGlass ? 28 : 14)
     }
 }

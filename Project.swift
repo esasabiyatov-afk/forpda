@@ -321,7 +321,6 @@ let project = Project(
                     .Internal.ToastClient,
                     .Internal.TopicEditFeature,
                     .Internal.FormFeature,
-                    .Internal.ForumMergeFeature,
                     .Internal.ForumMoveFeature,
                     .Internal.ForumStatFeature,
                     .SPM.NukeUI,
@@ -339,17 +338,6 @@ let project = Project(
                     .Internal.SharedUI,
                     .SPM.NukeUI,
                     .SPM.SFSafeSymbols,
-                    .SPM.TCA,
-                ]
-            ),
-
-            .feature(
-                name: "ForumMergeFeature",
-                dependencies: [
-                    .Internal.APIClient,
-                    .Internal.Models,
-                    .Internal.SharedUI,
-                    .Internal.ToastClient,
                     .SPM.TCA,
                 ]
             ),
@@ -915,24 +903,6 @@ let project = Project(
             ),
         
         // MARK: - Tests -
-
-            .target(
-                name: "NotificationsClientTests",
-                destinations: App.destinations,
-                product: .unitTests,
-                bundleId: App.bundleId + ".NotificationsClient.Tests",
-                deploymentTargets: App.deploymentTargets,
-                infoPlist: .default,
-                sources: ["Modules/Tests/NotificationsClientTests/**"],
-                dependencies: [
-                    .Internal.NotificationsClient,
-                    .SPM.CustomDump,
-                ],
-                settings: .settings(
-                    base: .targetSettings,
-                    defaultSettings: .recommended
-                )
-            ),
         
 //            .target(
 //                name: "ForPDATests",
@@ -1318,7 +1288,6 @@ extension TargetDependency.Internal {
     static let ForumEventLogFeature =   TargetDependency.target(name: "ForumEventLogFeature")
     static let ForumFeature =           TargetDependency.target(name: "ForumFeature")
     static let ForumsListFeature =      TargetDependency.target(name: "ForumsListFeature")
-    static let ForumMergeFeature =      TargetDependency.target(name: "ForumMergeFeature")
     static let ForumMoveFeature =       TargetDependency.target(name: "ForumMoveFeature")
     static let ForumStatFeature =       TargetDependency.target(name: "ForumStatFeature")
     static let GalleryFeature =         TargetDependency.target(name: "GalleryFeature")
@@ -1373,7 +1342,6 @@ extension TargetDependency {
 extension TargetDependency.SPM {
     static let AlertToast =     TargetDependency.external(name: "AlertToast")
     static let Cache =          TargetDependency.external(name: "Cache")
-    static let CustomDump =     TargetDependency.external(name: "CustomDump")
     static let ExyteChat =      TargetDependency.external(name: "ExyteChat")
     static let MemberwiseInit = TargetDependency.external(name: "MemberwiseInit")
     static let Nuke =           TargetDependency.external(name: "Nuke")

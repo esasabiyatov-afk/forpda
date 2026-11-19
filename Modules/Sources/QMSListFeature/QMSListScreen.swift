@@ -19,7 +19,6 @@ public struct QMSListScreen: View {
     
     @Perception.Bindable public var store: StoreOf<QMSListFeature>
     @Environment(\.tintColor) private var tintColor
-    @Environment(\.backgroundColors) private var backgroundColors
     
     @State private var scrollScale: CGFloat = 1
     
@@ -34,7 +33,7 @@ public struct QMSListScreen: View {
     public var body: some View {
         WithPerceptionTracking {
             ZStack {
-                backgroundColors.primary
+                Color(.Background.primary)
                     .ignoresSafeArea()
                 
                     switch store.viewState {
@@ -53,7 +52,7 @@ public struct QMSListScreen: View {
                                                     }
                                                 }
                                         }
-                                        .listRowBackground(backgroundColors.tertiary)
+                                        .listRowBackground(Color(.Background.teritary))
                                         .scaleEffect(store.goTo == user.id ? scrollScale : 1)
                                         .id(user.id)
                                     }
@@ -81,7 +80,7 @@ public struct QMSListScreen: View {
                         QMSList {
                             ForEach(0..<8) { _ in
                                 UserRow(.placeholder)
-                                    .listRowBackground(backgroundColors.tertiary)
+                                    .listRowBackground(Color(.Background.teritary))
                                     .redacted(if: true)
                             }
                         }
@@ -213,7 +212,7 @@ public struct QMSListScreen: View {
             .contentShape(.rect)
         }
         .buttonStyle(.plain)
-        .listRowBackground(backgroundColors.tertiary)
+        .listRowBackground(Color(.Background.teritary))
         .badge(user.unreadCount)
         ._badgeProminence(.increased)
     }
@@ -306,7 +305,7 @@ public struct QMSListScreen: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.borderless)
-        .listRowBackground(backgroundColors.tertiary)
+        .listRowBackground(Color(.Background.teritary))
         .badge(chat.unreadCount)
         ._badgeProminence(.increased)
         .contextMenu {
@@ -356,7 +355,7 @@ public struct QMSListScreen: View {
             .contentShape(.rect)
         }
         .buttonStyle(.borderless)
-        .listRowBackground(backgroundColors.tertiary)
+        .listRowBackground(Color(.Background.teritary))
     }
     
     // MARK: - Helpers

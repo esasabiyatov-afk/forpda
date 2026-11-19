@@ -16,7 +16,6 @@ public struct ListTagBuilderView: View {
     
     @Perception.Bindable public var store: StoreOf<ListTagBuilderFeature>
     @Environment(\.tintColor) private var tintColor
-    @Environment(\.backgroundColors) private var backgroundColors
     
     @FocusState var focus: ListTagBuilderFeature.State.Field?
     
@@ -31,7 +30,7 @@ public struct ListTagBuilderView: View {
     public var body: some View {
         WithPerceptionTracking {
             ZStack {
-                backgroundColors.primary
+                Color(.Background.primary)
                     .ignoresSafeArea()
                 
                 List {
@@ -46,7 +45,7 @@ public struct ListTagBuilderView: View {
                             .font(.footnote)
                             .foregroundStyle(Color(.Labels.teritary))
                     }
-                    .listRowBackground(backgroundColors.tertiary)
+                    .listRowBackground(Color(.Background.teritary))
                     .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16))
                 }
                 .scrollContentBackground(.hidden)

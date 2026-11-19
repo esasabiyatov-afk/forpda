@@ -18,7 +18,6 @@ public struct TicketStatusHistoryView: View {
     
     @Perception.Bindable public var store: StoreOf<TicketStatusHistoryFeature>
     @Environment(\.tintColor) private var tintColor
-    @Environment(\.backgroundColors) private var backgroundColors
     
     // MARK: - Init
     
@@ -71,7 +70,7 @@ public struct TicketStatusHistoryView: View {
                     LoadingError()
                 }
             }
-            .background(backgroundColors.primary)
+            .background(Color(.Background.primary))
             .onAppear {
                 send(.onAppear)
             }
@@ -119,7 +118,7 @@ public struct TicketStatusHistoryView: View {
         .padding(.vertical, 2)
         .padding(.horizontal, 6)
         .background(
-            backgroundColors.tertiary
+            Color(.Background.teritary)
                 .clipShape(RoundedRectangle(cornerRadius: isLiquidGlass ? 10 : 6))
         )
     }
@@ -141,7 +140,7 @@ public struct TicketStatusHistoryView: View {
         .frame(height: 48)
         .padding(.vertical, 8)
         .padding(.horizontal, 16)
-        .background(backgroundColors.primary)
+        .background(Color(.Background.primary))
     }
     
     // MARK: - Loading Error

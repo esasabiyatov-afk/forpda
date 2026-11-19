@@ -8,7 +8,6 @@
 import SwiftUI
 import ComposableArchitecture
 import Models
-import SharedUI
 
 // MARK: - Feature
 
@@ -74,7 +73,6 @@ public struct FormTitleFeature: Reducer {
 struct FormTitleRow: View {
     
     @Perception.Bindable var store: StoreOf<FormTitleFeature>
-    @Environment(\.backgroundColors) private var backgroundColors
     
     var body: some View {
         WithPerceptionTracking {
@@ -89,7 +87,7 @@ struct FormTitleRow: View {
                 .padding(.horizontal, 12)
                 .background {
                     RoundedRectangle(cornerRadius: 14)
-                        .fill(backgroundColors.tertiary)
+                        .fill(Color(.Background.teritary))
                 }
                 .onAppear {
                     send(.onAppear)

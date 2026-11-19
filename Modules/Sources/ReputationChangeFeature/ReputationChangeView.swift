@@ -17,7 +17,6 @@ public struct ReputationChangeView: View {
     
     @Perception.Bindable public var store: StoreOf<ReputationChangeFeature>
     @Environment(\.tintColor) private var tintColor
-    @Environment(\.backgroundColors) private var backgroundColors
     
     @FocusState public var focus: ReputationChangeFeature.State.Field?
 
@@ -63,7 +62,7 @@ public struct ReputationChangeView: View {
             .padding(.horizontal, 16)
             .background {
                 if !isLiquidGlass {
-                    backgroundColors.primary
+                    Color(.Background.primary)
                 }
             }
             .modifier(NavigationTitle())

@@ -1,62 +1,12 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "Advanced" : {
-      "localizations" : {
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Продвинутые"
-          }
-        }
-      }
-    },
     "All" : {
       "localizations" : {
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Все"
-          }
-        }
-      }
-    },
-    "Background" : {
-      "localizations" : {
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "В фоне"
-          }
-        }
-      }
-    },
-    "Cancel" : {
-      "localizations" : {
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Отмена"
-          }
-        }
-      }
-    },
-    "Change delivery method?" : {
-      "localizations" : {
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Изменить способ доставки?"
-          }
-        }
-      }
-    },
-    "Delivery method" : {
-      "localizations" : {
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Способ доставки"
           }
         }
       }
@@ -121,16 +71,6 @@
         }
       }
     },
-    "OK" : {
-      "localizations" : {
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ОК"
-          }
-        }
-      }
-    },
     "Only important" : {
       "localizations" : {
         "ru" : {
@@ -151,16 +91,6 @@
         }
       }
     },
-    "Push" : {
-      "localizations" : {
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Пуш"
-          }
-        }
-      }
-    },
     "QMS" : {
       "localizations" : {
         "ru" : {
@@ -171,32 +101,12 @@
         }
       }
     },
-    "Restart required" : {
-      "localizations" : {
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Необходим рестарт"
-          }
-        }
-      }
-    },
     "System events" : {
       "localizations" : {
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Системные события"
-          }
-        }
-      }
-    },
-    "This action will quit the app" : {
-      "localizations" : {
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Это действие закроет приложение"
           }
         }
       }

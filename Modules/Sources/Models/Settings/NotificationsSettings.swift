@@ -82,6 +82,4 @@ extension NotificationsSettings2 {
         .favorites,
         .mentions
     ]
-    
-    public static let disabled: NotificationsSettings2 = []
 }

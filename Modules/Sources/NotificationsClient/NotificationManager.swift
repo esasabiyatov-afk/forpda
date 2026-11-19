@@ -15,7 +15,7 @@ public final class NotificationManager: @unchecked Sendable {
     // MARK: - Types
     
     public enum PushDecision {
-        case deliver(title: String, body: String, badgeCount: Int)
+        case deliver(title: String, body: String)
         case suppress
     }
     
@@ -31,7 +31,6 @@ public final class NotificationManager: @unchecked Sendable {
     
     @Shared(.appSettings) var appSettings
     @Shared(.userSession) var userSession
-    @Shared(.notificationBadgeState) var notificationBadgeState
 
     @Dependency(\.analyticsClient) var analytics
     @Dependency(\.logger[.notifications]) var logger
@@ -45,24 +44,15 @@ public final class NotificationManager: @unchecked Sendable {
     public func handlePushNotification(item: PDANotification) async -> PushDecision {
         do {
             let notification = try item.toDomain()
-            let configuration = notificationBadgeState
-
-            guard processNotification(
-                item: notification,
-                context: nil,
-                settings: configuration.settings,
-                userID: configuration.userID
-            ) else {
+            
+            guard processNotification(item: notification, context: nil) else {
                 return .suppress
             }
             
             await clearNotifications(item: item)
             
             let content = buildNotificationContent(item: notification)
-            let badgeCount = $notificationBadgeState.withLock {
-                $0.merge(notification)
-            }
-            return .deliver(title: content.title, body: content.body, badgeCount: badgeCount)
+            return .deliver(title: content.title, body: content.body)
         } catch {
             analytics.capture(error)
             logger.error("Invalid notification payload: \(String(describing: error))")
@@ -80,12 +70,7 @@ public final class NotificationManager: @unchecked Sendable {
             do {
                 let notification = try item.toDomain()
 
-                guard processNotification(
-                    item: notification,
-                    context: context,
-                    settings: appSettings.notifications2,
-                    userID: userSession?.userId
-                ) else {
+                guard processNotification(item: notification, context: context) else {
                     continue
                 }
 
@@ -100,11 +85,6 @@ public final class NotificationManager: @unchecked Sendable {
                 logger.error("Skipping invalid notification: \(String(describing: error))")
             }
         }
-    }
-
-    public func markHandled(_ identifier: PDANotification.Identifier) {
-        @Shared(.notificationsCache) var notificationsCache
-        $notificationsCache.withLock { $0.markHandled(identifier) }
     }
     
     public func clear(by type: NotificationClearType) async {
@@ -154,12 +134,7 @@ public final class NotificationManager: @unchecked Sendable {
         }
     }
     
-    func processNotification(
-        item: PDANotificationDomain,
-        context: NotificationContext?,
-        settings: NotificationsSettings2,
-        userID: Int?
-    ) -> Bool {
+    func processNotification(item: PDANotificationDomain, context: NotificationContext?) -> Bool {
         @Shared(.notificationsCache) var notificationsCache
         
         switch item {
@@ -177,7 +152,7 @@ public final class NotificationManager: @unchecked Sendable {
             let notificationType: NotificationsSettings2 = isSystemEvent ? .qmsSystemEvents : .qms
             
             // Check if current qms type is enabled in app settings
-            guard settings.contains(notificationType) else {
+            guard appSettings.notifications2.contains(notificationType) else {
                 return false
             }
             
@@ -201,12 +176,12 @@ public final class NotificationManager: @unchecked Sendable {
             $notificationsCache.withLock { $0.forums[model.forumID] = model.lastPostDate.asInt() }
             
             // Don't show notifications of authorized user (multiple devices case)
-            if model.member.id == userID {
+            if model.member.id == userSession?.userId {
                 return false
             }
             
             // Check for app notification settings
-            switch settings.favoritesMode {
+            switch appSettings.notifications2.favoritesMode {
             case .all:
                 break
             case .important:
@@ -250,12 +225,12 @@ public final class NotificationManager: @unchecked Sendable {
             $notificationsCache.withLock { $0.topics[model.topicID] = model.lastPostDate.asInt() }
             
             // Don't show notifications of authorized user (multiple devices case)
-            if model.member.id == userID {
+            if model.member.id == userSession?.userId {
                 return false
             }
             
             // Check for app notification settings
-            switch settings.favoritesMode {
+            switch appSettings.notifications2.favoritesMode {
             case .all:
                 break
             case .important:
@@ -287,15 +262,8 @@ public final class NotificationManager: @unchecked Sendable {
             return true
             
         case .forumMention, .siteMention:
-            let identifier = item.toRaw().identifier
-            guard !notificationsCache.isHandled(identifier) else {
-                return false
-            }
-
-            $notificationsCache.withLock { $0.markHandled(identifier) }
-
             // Check for app notification settings
-            guard settings.contains(.mentions) else {
+            guard appSettings.notifications2.contains(.mentions) else {
                 return false
             }
             

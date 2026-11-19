@@ -434,7 +434,11 @@ public struct BBBuilder {
             }
             
         case .img(let attributedUrl):
-            let imageUrl = URL(string: attributedUrl.string)!
+            // Skip malformed image URLs instead of crashing
+            guard let imageUrl = URL(string: attributedUrl.string.trimmingCharacters(in: .whitespacesAndNewlines))
+                    ?? attributedUrl.string.addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed).flatMap(URL.init(string:)) else {
+                return isFirst ? .text(NSAttributedString()) : .text(combinedText)
+            }
             let attachment = AsyncTextAttachment(attachmentUrl: imageUrl, delegate: nil)
             attachment.link = attributedUrl.attribute(.link, at: 0, effectiveRange: nil) as? URL
             attachment.image = UIImage.placeholder(color: .lightGray, size: CGSize(width: 32, height: 32)) // TODO: Skeleton loader
@@ -448,19 +452,22 @@ public struct BBBuilder {
             
         case .attachment(let attachmentId):
             let split = attachmentId.string.dropFirst().dropLast().split(separator: ":")
-            let id = Int(split.first!)!
-            let name = String(split.last!)
-            
-            let attachment = attachments.first(where: { $0.id == id })!
+            // Skip broken or missing attachments instead of crashing
+            guard let id = attachmentId.string.bbAttachmentId,
+                  let attachment = attachments.first(where: { $0.id == id }) else {
+                return isFirst ? .text(NSAttributedString()) : .text(combinedText)
+            }
+            let name = split.last.map(String.init) ?? attachment.name
             let attachmentString: NSAttributedString
             
-            if attachment.type == .image {
-                let asyncAttachment = AsyncTextAttachment(attachmentUrl: attachment.metadata!.url)
+            if attachment.type == .image, let metadata = attachment.metadata {
+                let asyncAttachment = AsyncTextAttachment(attachmentUrl: metadata.url)
                 asyncAttachment.image = UIImage.placeholder(color: .gray, size: CGSize(width: 32, height: 32)) // TODO: Skeleton loader
                 attachmentString = NSAttributedString(attachment: asyncAttachment)
             } else {
                 let downloadLink = "https://4pda.to/forum/dl/post/\(id)/\(name)"
-                let downloadUrl = URL(string: downloadLink.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)!
+                let downloadUrl = downloadLink.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed).flatMap(URL.init(string:))
+                    ?? URL(string: "https://4pda.to/forum/dl/post/\(id)/")!
                 let image = UIImage(systemSymbol: .arrowDownDoc).withTintColor(.tintColor)//, withConfiguration: config)
                 let textAttachment = AsyncTextAttachment(image: image)//, displaySize: CGSize(width: 16, height: 16))
                 textAttachment.link = downloadUrl

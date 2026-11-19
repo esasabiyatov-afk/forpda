@@ -17,7 +17,6 @@ public struct NavigationSettingsScreen: View {
     
     @Perception.Bindable public var store: StoreOf<NavigationSettingsFeature>
     @Environment(\.tintColor) private var tintColor
-    @Environment(\.backgroundColors) private var backgroundColors
     
     // MARK: - Init
     
@@ -30,7 +29,7 @@ public struct NavigationSettingsScreen: View {
     public var body: some View {
         WithPerceptionTracking {
             ZStack {
-                backgroundColors.primary
+                Color(.Background.primary)
                     .ignoresSafeArea()
                 
                 List {
@@ -76,7 +75,7 @@ public struct NavigationSettingsScreen: View {
                         }
                     }
                     .tint(tintColor)
-                    .listRowBackground(backgroundColors.tertiary)
+                    .listRowBackground(Color(.Background.teritary))
                     .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16))
                     .frame(minHeight: 60)
                 }

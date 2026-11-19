@@ -26,7 +26,7 @@ public struct AppSettings: Sendable, Equatable, Codable {
     public var backgroundTheme: BackgroundTheme
     public var appTintColor: AppTintColor
     public var notifications2: NotificationsSettings2
-    public var notificationsDeliveryMethod: NotificationsDeliveryMethod
+    public var backgroundNotifications2: Bool
     public var backupServer: Bool
     public var tickets: TicketsSettings
     public var favorites: FavoritesSettings
@@ -52,7 +52,7 @@ public struct AppSettings: Sendable, Equatable, Codable {
         backgroundTheme: BackgroundTheme,
         appTintColor: AppTintColor,
         notifications2: NotificationsSettings2,
-        notificationsDeliveryMethod: NotificationsDeliveryMethod,
+        backgroundNotifications2: Bool,
         backupServer: Bool,
         tickets: TicketsSettings,
         favorites: FavoritesSettings,
@@ -77,7 +77,7 @@ public struct AppSettings: Sendable, Equatable, Codable {
         self.backgroundTheme = backgroundTheme
         self.appTintColor = appTintColor
         self.notifications2 = notifications2
-        self.notificationsDeliveryMethod = notificationsDeliveryMethod
+        self.backgroundNotifications2 = backgroundNotifications2
         self.backupServer = backupServer
         self.tickets = tickets
         self.favorites = favorites
@@ -102,10 +102,10 @@ public struct AppSettings: Sendable, Equatable, Codable {
         self.topicShowAllPostsFilter = try container.decodeIfPresent(Bool.self, forKey: .topicShowAllPostsFilter) ?? AppSettings.default.topicShowAllPostsFilter
         self.topicOpeningStrategy = try container.decodeIfPresent(TopicOpeningStrategy.self, forKey: .topicOpeningStrategy) ?? AppSettings.default.topicOpeningStrategy
         self.appColorScheme = try container.decodeIfPresent(AppColorScheme.self, forKey: .appColorScheme) ?? AppSettings.default.appColorScheme
-        self.backgroundTheme = (try? container.decodeIfPresent(BackgroundTheme.self, forKey: .backgroundTheme)) ?? AppSettings.default.backgroundTheme
+        self.backgroundTheme = try container.decodeIfPresent(BackgroundTheme.self, forKey: .backgroundTheme) ?? AppSettings.default.backgroundTheme
         self.appTintColor = try container.decodeIfPresent(AppTintColor.self, forKey: .appTintColor) ?? AppSettings.default.appTintColor
         self.notifications2 = try container.decodeIfPresent(NotificationsSettings2.self, forKey: .notifications2) ?? AppSettings.default.notifications2
-        self.notificationsDeliveryMethod = try container.decodeIfPresent(NotificationsDeliveryMethod.self, forKey: .notificationsDeliveryMethod) ?? AppSettings.default.notificationsDeliveryMethod
+        self.backgroundNotifications2 = try container.decodeIfPresent(Bool.self, forKey: .backgroundNotifications2) ?? AppSettings.default.backgroundNotifications2
         self.backupServer = try container.decodeIfPresent(Bool.self, forKey: .backupServer) ?? AppSettings.default.backupServer
         self.tickets = try container.decodeIfPresent(TicketsSettings.self, forKey: .tickets) ?? AppSettings.default.tickets
         self.favorites = try container.decodeIfPresent(FavoritesSettings.self, forKey: .favorites) ?? AppSettings.default.favorites
@@ -135,7 +135,7 @@ public struct AppSettings: Sendable, Equatable, Codable {
             "backgroundTheme": backgroundTheme._rawValue,
             "appTintColor": appTintColor._rawValue,
             "notifications2": notifications2.rawValue,
-            "notificationsDeliveryMethod": notificationsDeliveryMethod.description,
+            "backgroundNotifications": backgroundNotifications2,
             "backupServer": backupServer,
             "tickets": tickets.asDictionary(),
             "favorites": favorites.asDictionary(),
@@ -159,7 +159,7 @@ public extension AppSettings {
         backgroundTheme: .blue,
         appTintColor: .primary,
         notifications2: .default,
-        notificationsDeliveryMethod: .push,
+        backgroundNotifications2: true,
         backupServer: false,
         tickets: .default,
         favorites: .default,

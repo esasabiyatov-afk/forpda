@@ -15,7 +15,6 @@ struct WarningLogView: View {
     // MARK: - Properties
     
     @Environment(\.tintColor) private var tintColor
-    @Environment(\.backgroundColors) private var backgroundColors
     
     private let warningLog: User.WarningLog
     private let deeplinkTapped: (URL) -> Void
@@ -49,7 +48,7 @@ struct WarningLogView: View {
                     .padding(.vertical, 4)
                     .padding(.horizontal, 6)
                     .background(
-                        backgroundColors.tertiary
+                        Color(.Background.teritary)
                             .clipShape(RoundedRectangle(cornerRadius: 10))
                     )
             }

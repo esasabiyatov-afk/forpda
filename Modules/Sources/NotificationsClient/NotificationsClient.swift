@@ -47,7 +47,7 @@ public struct NotificationsClient: Sendable {
     public var hasPermission: @Sendable () async throws -> Bool
     public var requestPermission: @Sendable () async throws -> Bool
     public var registerForRemoteNotifications: @Sendable () async -> Void
-    public var unregisterForRemoteNotifications: @Sendable () async -> Void
+    public var setDeviceToken: @Sendable (String) -> Void
     public var delegate: @Sendable () -> AsyncStream<UNNotificationSnapshot> = { .finished }
     public var processNotification: @Sendable (String) async -> Bool = { _ in false }
     public var showUnreadNotifications: @Sendable (_ unread: Unread, _ skipCategories: [PDANotification.Kind]) async -> Void
@@ -106,13 +106,14 @@ extension NotificationsClient: DependencyKey {
                 await UIApplication.shared.registerForRemoteNotifications()
             },
             
-            unregisterForRemoteNotifications: {
-                await UIApplication.shared.unregisterForRemoteNotifications()
+            setDeviceToken: { token in
+                @Shared(.appStorage("device_token")) var deviceToken: String?
+                $deviceToken.withLock { $0 = token }
             },
             
             delegate: {
                 AsyncStream { continuation in
-                    let delegate = Delegate(continuation: continuation, manager: manager)
+                    let delegate = Delegate(continuation: continuation)
                     center.delegate = delegate
                     continuation.onTermination = { _ in
                         _ = delegate
@@ -213,22 +214,34 @@ extension NotificationsClient: DependencyKey {
             showUnreadNotifications: { unread, skipCategories in
                 @Dependency(\.analyticsClient) var analyticsClient
                 @Shared(.appSettings) var appSettings
-                @Shared(.userSession) var userSession
-                @Shared(.notificationBadgeState) var notificationBadgeState
                 
                 unreadSubject.send(unread)
                 
                 do {
                     let notifications = appSettings.notifications2
-                    let badgeState = NotificationBadgeState(
-                        unread: unread,
-                        settings: notifications,
-                        userID: userSession?.userId
-                    )
-                    $notificationBadgeState.withLock { $0 = badgeState }
+
+                    var favoritesCount = 0
+                    if notifications.contains(.favoritesImportant) {
+                        favoritesCount += unread.favoritesImportantCount
+                    } else if notifications.contains(.favorites) {
+                        favoritesCount += unread.favoritesCount
+                    }
                     
-                    logger.info("Setting app notifications badge to \(badgeState.totalCount)")
-                    try await center.setBadgeCount(badgeState.totalCount)
+                    // Sometimes we have more favorites in general count than in an array, so we apply min() fix
+                    favoritesCount = min(unread.favoritesUnreadCount, favoritesCount)
+                    
+                    let mentionsCount = notifications.contains(.mentions)
+                    ? (unread.siteMentionsCount + unread.forumMentionsCount)
+                    : 0
+                    
+                    var qmsCount = 0
+                    qmsCount += notifications.contains(.qms) ? unread.qmsCount : 0
+                    qmsCount += notifications.contains(.qmsSystemEvents) ? unread.qmsSystemCount : 0
+                    
+                    let totalCount = favoritesCount + mentionsCount + qmsCount
+                    
+                    logger.info("Setting app notifications badge to \(totalCount)")
+                    try await center.setBadgeCount(totalCount)
                 } catch {
                     analyticsClient.capture(error)
                 }
@@ -295,19 +308,14 @@ extension NotificationsClient {
     fileprivate final class Delegate: NSObject, Sendable, UNUserNotificationCenterDelegate {
         
         let continuation: AsyncStream<UNNotificationSnapshot>.Continuation
-        private let manager: NotificationManager
         private nonisolated(unsafe) var lastNotificationId: String = ""
                 
         enum NotificationType {
             case socket, remote
         }
         
-        init(
-            continuation: AsyncStream<UNNotificationSnapshot>.Continuation,
-            manager: NotificationManager
-        ) {
+        init(continuation: AsyncStream<UNNotificationSnapshot>.Continuation) {
             self.continuation = continuation
-            self.manager = manager
         }
         
         // Called when notification will be presented in foreground
@@ -338,11 +346,6 @@ extension NotificationsClient {
             analytics.capturePushNotificationOpened(response)
             
             let snapshot = UNNotificationSnapshot(response.notification)
-
-            if let identifier = snapshot.pdaIdentifier {
-                manager.markHandled(identifier)
-            }
-
             continuation.yield(snapshot)
         }
     }
@@ -372,7 +375,7 @@ public struct UNNotificationSnapshot: Sendable {
         subtitle = content.subtitle
         body = content.body
         
-        pdaIdentifier = .init(userInfo: content.userInfo) ?? .init(rawValue: identifier)
+        pdaIdentifier = .init(userInfo: content.userInfo)
     }
 }
 

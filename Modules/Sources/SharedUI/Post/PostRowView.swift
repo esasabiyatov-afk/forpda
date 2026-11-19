@@ -24,8 +24,6 @@ public struct PostRowView: View {
     
     // MARK: - Properties
     
-    @Environment(\.backgroundColors) private var backgroundColors
-    
     public let state: State
     public let action: (PostAction) -> Void
     public let menuAction: (PostMenuAction) -> Void
@@ -90,7 +88,7 @@ public struct PostRowView: View {
                             .padding(.horizontal, 6)
                             .background(
                                 RoundedRectangle(cornerRadius: 6)
-                                    .foregroundStyle(backgroundColors.tertiary)
+                                    .foregroundStyle(Color(.Background.teritary))
                             )
                     }
                     .onTapGesture {
@@ -228,7 +226,7 @@ public struct PostRowView: View {
             .padding(.vertical, 2)
             .padding(.horizontal, 6)
             .background(
-                backgroundColors.tertiary
+                Color(.Background.teritary)
                     .clipShape(RoundedRectangle(cornerRadius: 10))
             )
     }

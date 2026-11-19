@@ -20,7 +20,6 @@ public struct FavoritesScreen: View {
     @Perception.Bindable public var store: StoreOf<FavoritesFeature>
     @State private var navigationMinimized = false
     @Environment(\.tintColor) private var tintColor
-    @Environment(\.backgroundColors) private var backgroundColors
     
     private var shouldShowInlineNavigation: Bool {
         let isAnyFloatingNavigationEnabled = store.appSettings.floatingNavigation || store.appSettings.experimentalFloatingNavigation
@@ -42,7 +41,7 @@ public struct FavoritesScreen: View {
     public var body: some View {
         WithPerceptionTracking {
             ZStack {
-                backgroundColors.primary
+                Color(.Background.primary)
                     .ignoresSafeArea()
 
                 if store.shouldShowEmptyState {
@@ -160,21 +159,11 @@ public struct FavoritesScreen: View {
     private func TopicContextMenu(favorite: FavoriteInfo) -> some View {
         VStack(spacing: 0) {
             Section {
-                switch store.appSettings.topicOpeningStrategy {
-                case .first:
-                    ContextButton(
-                        text: LocalizedStringResource("Go To End", bundle: .module),
-                        symbol: .chevronRight2
-                    ) {
-                        send(.topicContextMenu(.goToEnd, favorite))
-                    }
-                case .last, .unread:
-                    ContextButton(
-                        text: LocalizedStringResource("Go To First", bundle: .module),
-                        symbol: .chevronRight2
-                    ) {
-                        send(.topicContextMenu(.goToFirst, favorite))
-                    }
+                ContextButton(
+                    text: LocalizedStringResource("Go To End", bundle: .module),
+                    symbol: .chevronRight2
+                ) {
+                    send(.topicContextMenu(.goToEnd, favorite))
                 }
                 
                 ContextButton(
@@ -260,7 +249,7 @@ public struct FavoritesScreen: View {
                     }
                 }
                 .listRowBackground(
-                    backgroundColors.tertiary
+                    Color(.Background.teritary)
                         .clipShape(
                             .rect(
                                 topLeadingRadius: index == 0 ? radius : 0,
@@ -283,7 +272,7 @@ public struct FavoritesScreen: View {
                        : LocalizedStringKey("Topics / Forums"))
             }
         }
-        .listRowBackground(backgroundColors.tertiary)
+        .listRowBackground(Color(.Background.teritary))
     }
     
     // MARK: - Navigation

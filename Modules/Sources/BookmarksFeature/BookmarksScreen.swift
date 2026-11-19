@@ -15,7 +15,6 @@ public struct BookmarksScreen: View {
     
     @Perception.Bindable public var store: StoreOf<BookmarksFeature>
     @Environment(\.tintColor) private var tintColor
-    @Environment(\.backgroundColors) private var backgroundColors
     
     public init(store: StoreOf<BookmarksFeature>) {
         self.store = store
@@ -24,7 +23,7 @@ public struct BookmarksScreen: View {
     public var body: some View {
         WithPerceptionTracking {
             ZStack {
-                backgroundColors.primary
+                Color(.Background.primary)
                     .ignoresSafeArea()
                 
                 VStack(spacing: 0) {
@@ -42,7 +41,7 @@ public struct BookmarksScreen: View {
             }
             .navigationTitle(Text("Bookmarks", bundle: .module))
             ._toolbarTitleDisplayMode(.large)
-            .toolbarBackground(backgroundColors.primary, for: .navigationBar)
+            .toolbarBackground(Color(.Background.primary), for: .navigationBar)
             .onAppear {
                 store.send(.onAppear)
             }

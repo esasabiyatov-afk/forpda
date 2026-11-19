@@ -19,7 +19,6 @@ public struct ReputationScreen: View {
     
     @Perception.Bindable public var store: StoreOf<ReputationFeature>
     @Environment(\.tintColor) private var tintColor
-    @Environment(\.backgroundColors) private var backgroundColors
     
     // MARK: - init
     
@@ -32,7 +31,7 @@ public struct ReputationScreen: View {
     public var body: some View {
         WithPerceptionTracking {
             ZStack {
-                backgroundColors.primary
+                Color(.Background.primary)
                     .ignoresSafeArea()
                 
                 VStack {
@@ -72,7 +71,7 @@ public struct ReputationScreen: View {
     @ViewBuilder
     private func ReputationSection() -> some View {
         ZStack {
-            backgroundColors.primary
+            Color(.Background.primary)
                 .ignoresSafeArea()
             
             if store.historyData.isEmpty {
@@ -83,7 +82,7 @@ public struct ReputationScreen: View {
                 List(store.historyData, id: \.self) { vote in
                     WithPerceptionTracking {
                         ReputationRow(vote: vote)
-                            .listRowBackground(backgroundColors.primary)
+                            .listRowBackground(Color(.Background.primary))
                             .onAppear {
                                 if let index = store.historyData.firstIndex(of: vote),
                                    index == store.historyData.count - 5 {
@@ -94,7 +93,7 @@ public struct ReputationScreen: View {
                 }
                 .listStyle(.plain)
                 .scrollContentBackground(.hidden)
-                .background(backgroundColors.primary)
+                .background(Color(.Background.primary))
                 .refreshable {
                     await send(.refresh).finish()
                 }
@@ -205,7 +204,7 @@ public struct ReputationScreen: View {
         .padding(.leading, 12)
         .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
         .contentShape(Rectangle())
-        .background(backgroundColors.primary)
+        .background(Color(.Background.primary))
         .contextMenu {
             if store.isUserAuthorized {
                 MenuButtons(vote: vote)

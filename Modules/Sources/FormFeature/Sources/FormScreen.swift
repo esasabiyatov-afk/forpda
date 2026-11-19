@@ -20,7 +20,6 @@ public struct FormScreen: View {
     @Perception.Bindable public var store: StoreOf<FormFeature>
     @FocusState private var focusedField: Int?
     @Environment(\.tintColor) private var tintColor
-    @Environment(\.backgroundColors) private var backgroundColors
     
     // MARK: - Init
     
@@ -73,7 +72,7 @@ public struct FormScreen: View {
                 Toolbar()
             }
             .background(
-                backgroundColors.primary
+                Color(.Background.primary)
                     .opacity(isLiquidGlass && store.isSimplePost ? 0.5 : 1)
                     .ignoresSafeArea()
             )

@@ -17,7 +17,6 @@ public struct SearchScreen: View {
     
     @Perception.Bindable public var store: StoreOf<SearchFeature>
     @Environment(\.tintColor) private var tintColor
-    @Environment(\.backgroundColors) private var backgroundColors
     
     @FocusState public var focus: SearchFeature.State.Field?
     
@@ -34,7 +33,7 @@ public struct SearchScreen: View {
     public var body: some View {
         WithPerceptionTracking {
             ZStack {
-                backgroundColors.primary
+                Color(.Background.primary)
                     .ignoresSafeArea()
                 
                 List {
@@ -55,7 +54,7 @@ public struct SearchScreen: View {
             }
             .navigationTitle(Text("Search", bundle: .module))
             .navigationBarTitleDisplayMode(.inline)
-            .background(backgroundColors.primary)
+            .background(Color(.Background.primary))
             .searchable(text: $store.searchText, placement: .navigationBarDrawer(displayMode: .always))
             .onSubmit(of: .search) {
                 send(.startSearch)
@@ -87,7 +86,7 @@ public struct SearchScreen: View {
                 }
             }
         }
-        .listRowBackground(backgroundColors.tertiary)
+        .listRowBackground(Color(.Background.teritary))
         .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
     }
     
@@ -256,7 +255,7 @@ public struct SearchScreen: View {
                     }
                     .padding(.vertical, 16)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(backgroundColors.tertiary)
+                    .background(Color(.Background.teritary))
                     .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
