@@ -25,6 +25,12 @@ permissions:
 jobs:
   build:
     name: Build unsigned IPA
+    # Builds take ~30 min: run only on tags, manual runs, or commits marked [build] / [release]
+    if: >-
+      github.event_name != 'push' ||
+      startsWith(github.ref, 'refs/tags/') ||
+      contains(github.event.head_commit.message, '[build]') ||
+      contains(github.event.head_commit.message, '[release]')
     runs-on: macos-26
     timeout-minutes: 90
     steps:
