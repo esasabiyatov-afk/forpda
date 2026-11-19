@@ -1018,6 +1018,8 @@ let project = Project(
 
 struct App {
     static let name = "ForPDA"
+    /// Name shown on the Home Screen
+    static let displayName = "ForPDA Mod"
     static let destinations: Destinations = .iOS
     static let bundleId = "com.subvert.forpda"
     static let deploymentTargets: DeploymentTargets = .iOS("16.0")
@@ -1124,7 +1126,7 @@ extension Settings {
 extension SettingsDictionary {
     static let appSettings = SettingsDictionary()
         .merging(.targetSettings)
-        .setAppName(App.name)
+        .setAppName(App.displayName)
         .setDevelopmentTeam("7353CQCGQC")
     
         .includeAppIcon()

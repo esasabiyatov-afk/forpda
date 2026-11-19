@@ -88,6 +88,8 @@ jobs:
           VERSION=$(/usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' "$APP/Info.plist")
           BUILD=$(/usr/libexec/PlistBuddy -c 'Print CFBundleVersion' "$APP/Info.plist")
           BASE="ForPDA-Mod-${VERSION}-${BUILD}"
+          echo "Display name: $(/usr/libexec/PlistBuddy -c 'Print CFBundleDisplayName' "$APP/Info.plist" 2>/dev/null || echo '(not set)')"
+          echo "Icon: $(/usr/libexec/PlistBuddy -c 'Print CFBundleIcons:CFBundlePrimaryIcon:CFBundleIconName' "$APP/Info.plist" 2>/dev/null || echo '(not set)')"
           echo "Extensions in build:"; ls "$APP/PlugIns" 2>/dev/null || echo "  (none)"
 
           # Full: with extensions
