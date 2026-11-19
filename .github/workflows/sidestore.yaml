@@ -111,10 +111,25 @@ jobs:
           name: xcodebuild-log
           path: xcodebuild.log
 
+      # Release on a pushed tag v*, or on a push whose commit message contains [release]
+      - name: Compute release tag
+        if: startsWith(github.ref, 'refs/tags/v') || contains(github.event.head_commit.message, '[release]')
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            TAG="$GITHUB_REF_NAME"
+          else
+            VERSION=$(/usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' Payload/ForPDA.app/Info.plist)
+            TAG="v${VERSION}-mod.${GITHUB_RUN_NUMBER}"
+          fi
+          echo "RELEASE_TAG=$TAG" >> "$GITHUB_ENV"
+
       - name: Publish release
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: startsWith(github.ref, 'refs/tags/v') || contains(github.event.head_commit.message, '[release]')
         uses: softprops/action-gh-release@v2
         with:
-          name: ForPDA Mod ${{ github.ref_name }}
+          tag_name: ${{ env.RELEASE_TAG }}
+          target_commitish: ${{ github.sha }}
+          make_latest: true
+          name: ForPDA Mod ${{ env.RELEASE_TAG }}
           body_path: RELEASE_NOTES.md
           files: ${{ env.IPA_NAME }}
