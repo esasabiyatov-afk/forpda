@@ -5,7 +5,7 @@
 ### Какой файл выбрать
 | Файл | Для чего |
 |---|---|
-| `…-sideload.ipa` | **SideStore / AltStore / Sideloadly с бесплатным Apple ID.** Без расширений — занимает 1 App ID. |
+| `…-sideload.ipa` | **SideStore / AltStore / Sideloadly / iloader с бесплатным Apple ID.** Без расширений — занимает 1 App ID. |
 | `…-full.ipa` | **TrollStore, Feather / ESign / Scarlet, платный сертификат.** С расширением Safari и расширением уведомлений. |
 
 Если не уверены — берите `sideload`.
@@ -13,6 +13,7 @@
 ### Установка
 - **SideStore / AltStore:** My Apps → «+» → выберите `.ipa`. Подпись продлевается раз в 7 дней.
 - **Sideloadly:** перетащите `.ipa`, войдите своим Apple ID.
+- **iloader** (Windows / macOS / Linux): подключите iPhone, войдите своим Apple ID, выберите `.ipa` для установки.
 - **TrollStore:** откройте `.ipa` через «Поделиться» → TrollStore.
 
 ### Отличия от оригинала
